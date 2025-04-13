@@ -1,0 +1,307 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 64px;
+  min-height: 100vh; /* Đảm bảo chiều cao tối thiểu */
+}
+/* Header container */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 4px;
+}
+
+/* Header title */
+.header-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+/* Header actions container */
+.header-actions {
+  display: flex;
+  gap: 16px;
+}
+
+/* Search input */
+.search-input {
+  width: 300px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+}
+
+/* Add button */
+.add-button {
+  padding: 8px 16px;
+  background-color: #39ac69;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+  background-color: #2563eb;
+}
+
+/* Tabs container */
+.tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Tab item */
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Khoảng cách giữa chấm tròn và text */
+  padding: 8px 16px;
+  background-color: #f6f6f6;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: 1px solid #9e9999;
+  font-weight: 600;
+  color: #7d828a;
+}
+
+.tab:hover {
+  background-color: #b0fbd4;
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+/* Tab icon (chấm tròn) */
+.tab-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* Màu sắc cho từng tab */
+.tab-icon.available {
+  background-color: #afafaf;
+}
+
+.tab-icon.pending {
+  background-color: #ff8800;
+}
+
+.tab-icon.in-use {
+  background-color: #279656;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px; /* Khoảng cách giữa các card */
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 cột trên màn hình lớn vừa */
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 cột trên màn hình nhỏ */
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr; /* 1 cột trên màn hình rất nhỏ */
+  }
+}
+
+.card {
+  background-color: white;
+  border-radius: 12px; /* Bo góc mềm mại hơn */
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  min-height: 210px;
+  border: 1px solid transparent; /* Viền mặc định trong suốt */
+}
+
+.card:hover {
+  transform: translateY(-8px); /* Nâng lên khi hover */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Tăng bóng đổ khi hover */
+  border-color: #15e48e; /* Thay đổi màu viền khi hover */
+}
+
+/* Card trạng thái trống */
+.card.available {
+  background-color: #ffffff; /* Màu xanh lá nhạt */
+  border-color: #35453f; /* Viền xanh lá */
+}
+
+/* Card trạng thái chưa nhận phòng */
+.card.pending {
+  background-color: #f78c4a; /* Màu vàng nhạt */
+  border-color: #f59e0b; /* Viền vàng */
+}
+
+/* Card trạng thái đang sử dụng */
+.card.in-use {
+  background-color: #58ff9d;
+  border-color: #279656; /* Viền đỏ */
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 20px; /* Tăng kích thước font */
+  font-weight: bold;
+  color: #242e3b; /* Màu chữ đậm hơn */
+}
+
+.card-badge {
+  padding: 6px 12px; /* Tăng kích thước padding */
+  border-radius: 16px; /* Bo góc tròn hơn */
+  font-size: 14px; /* Tăng kích thước font */
+  font-weight: bold;
+  color: white;
+}
+
+.card-badge.clean {
+  background-color: rgba(58, 210, 61, 0.8);
+}
+
+.card-badge.dirty {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.card-content {
+  font-size: 16px; /* Tăng kích thước font */
+  color: #000000c2; /* Màu chữ trung tính */
+  line-height: 1.5; /* Tăng khoảng cách dòng */
+}
+
+.room-type {
+  font-size: 16px; /* Kích thước chữ */
+  font-weight: bold; /* Chữ đậm */
+  color: #000000cc; /* Màu chữ đậm */
+  text-overflow: ellipsis; /* Hiển thị dấu "..." nếu nội dung quá dài */
+  overflow: hidden; /* Ẩn phần nội dung tràn */
+  white-space: nowrap; /* Không cho phép xuống dòng */
+}
+
+.card-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #6b7280; /* Màu chữ nhạt */
+}
+
+.card-footer .price {
+  font-weight: bold;
+  color: #1f2937; /* Màu chữ đậm */
+}
+
+.card-footer .action {
+  padding: 6px 12px;
+  background-color: #3b82f6; /* Màu xanh dương */
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.card-footer .action:hover {
+  background-color: #2563eb; /* Màu xanh dương đậm hơn khi hover */
+}
+
+/* View toggle container */
+.view-toggle {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+/* Toggle button */
+.toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Khoảng cách giữa icon và chữ */
+  padding: 8px 16px;
+  border: 0px solid #ccc;
+  background-color: #f3f4f6;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #374151;
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.toggle-button i {
+  font-size: 16px; /* Kích thước icon */
+}
+
+.toggle-button.active {
+  background-color: #10b981; /* Màu xanh lá khi được chọn */
+  color: white;
+  border-color: #10b981;
+}
+
+.toggle-button span {
+  display: none; /* Ẩn chữ mặc định */
+}
+
+.toggle-button.active span {
+  display: inline; /* Hiển thị chữ khi được chọn */
+}
+
+/* Table styles */
+.room-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.room-table th,
+.room-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.room-table th {
+  background-color: #f3f4f6;
+  font-weight: bold;
+}
+
+.room-table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.room-table tr:hover {
+  background-color: #f1f5f9;
+}
