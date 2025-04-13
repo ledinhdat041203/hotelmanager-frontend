@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+body {
+  margin: 0;
+  padding: 0px 16px;
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước phần tử */
+  background-color: #f9fafb; /* Màu nền nhạt */
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}

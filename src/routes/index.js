@@ -3,18 +3,32 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "../components/ProtectedRoute";
+import Booking from "../pages/BookingPage";
+import Header from "../components/Header";
 
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+
         <Route
-          path="/"
+          path="/*"
           element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
+            <>
+              <Header />
+              <Routes>
+                <Route path="/booking" element={<Booking />} />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <HomePage />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </>
           }
         />
       </Routes>

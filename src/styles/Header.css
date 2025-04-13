@@ -1,0 +1,78 @@
+/* Header container */
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background-color: #2bb43d;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center; /* Căn giữa logo và chữ theo chiều dọc */
+  gap: 12px; /* Tạo khoảng cách giữa logo và chữ */
+}
+
+.logo-image {
+  width: 40px; /* Kích thước logo */
+  height: 40px;
+  object-fit: contain; /* Đảm bảo logo không bị méo */
+}
+
+.logo span {
+  font-size: 20px; /* Kích thước chữ */
+  font-weight: bold; /* Chữ đậm */
+  color: #ffffff; /* Màu chữ trắng */
+  text-transform: uppercase; /* Chuyển chữ thành in hoa */
+  letter-spacing: 1px; /* Khoảng cách giữa các chữ cái */
+}
+
+/* Navigation links */
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-link {
+  text-decoration: none;
+  font-size: 16px;
+  color: #ffffff; /* Màu chữ trắng */
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #d1fae5; /* Màu xanh lá nhạt khi hover */
+}
+
+/* User info */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Avatar */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* User name */
+.user-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff; /* Màu chữ trắng */
+}
