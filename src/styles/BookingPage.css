@@ -37,7 +37,7 @@
 }
 
 .search-input:focus {
-  border-color: #3b82f6;
+  border-color: #39ac69;
 }
 
 /* Add button */
@@ -53,7 +53,7 @@
 }
 
 .add-button:hover {
-  background-color: #2563eb;
+  background-color: #279656;
 }
 
 /* Tabs container */
@@ -151,13 +151,13 @@
 
 /* Card trạng thái chưa nhận phòng */
 .card.pending {
-  background-color: #f78c4a; /* Màu vàng nhạt */
+  background-color: #ff8800; /* Màu vàng nhạt */
   border-color: #f59e0b; /* Viền vàng */
 }
 
 /* Card trạng thái đang sử dụng */
 .card.in-use {
-  background-color: #58ff9d;
+  background-color: #14ba5f;
   border-color: #279656; /* Viền đỏ */
 }
 
@@ -237,10 +237,12 @@
 
 /* View toggle container */
 .view-toggle {
-  display: flex;
+  display: inline-flex;
   border: 1px solid #ccc;
   border-radius: 8px;
   margin-top: 8px;
+  padding: 4px; /* Thêm khoảng cách bên trong */
+  justify-content: flex-start;
 }
 
 /* Toggle button */
@@ -304,4 +306,53 @@
 
 .room-table tr:hover {
   background-color: #f1f5f9;
+}
+
+/* Container cho header table */
+.table .table-header {
+  display: grid; /* Sử dụng grid để căn chỉnh các cột */
+  grid-template-columns: 1fr 2fr 2fr 2fr 3fr 3fr 3fr 3fr 2fr; /* Tỷ lệ cột: Loại phòng (2 phần), Giá (1 phần mỗi cột) */
+  min-height: 48px;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: start;
+  background-color: #e9f5ee; /* Màu nền nhạt */
+  padding: 10px 16px; /* Khoảng cách bên trong */
+  border-radius: 12px; /* Bo góc */
+  font-weight: bolder; /* Chữ đậm */
+  color: #374151; /* Màu chữ */
+  border: 1px solid #beedc5; /* Viền nhạt */
+}
+
+/* Các span bên trong header */
+.table .table-header span {
+  text-align: center; /* Căn giữa nội dung */
+}
+
+/* Table body */
+.table .table-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Table row */
+.table .table-row {
+  display: grid; /* Sử dụng grid để căn chỉnh các cột */
+  grid-template-columns: 1fr 2fr 2fr 2fr 3fr 3fr 3fr 3fr 2fr;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  background-color: #ffffff; /* Màu nền trắng */
+  padding: 12px 16px; /* Khoảng cách bên trong */
+  border-radius: 8px; /* Bo góc */
+  border: 1px solid #e5e7eb; /* Viền nhạt */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng mờ */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Hiệu ứng khi hover */
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.table-row:hover {
+  background-color: #f9fafb; /* Màu nền khi hover */
+  box-shadow: 0 4px 8px rgba(4, 237, 78, 0.15); /* Bóng mờ đậm hơn khi hover */
+  transform: translateY(-1px); /* Hiệu ứng nổi lên khi hover */
 }

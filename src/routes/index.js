@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Booking from "../pages/BookingPage";
 import Header from "../components/Header";
+import BookingDetail from "../pages/BookingDetailPage";
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
               <Header />
               <Routes>
                 <Route path="/booking" element={<Booking />} />
+                <Route path="/booking-detail" element={<BookingDetail />} />
                 <Route
                   path="/"
                   element={
