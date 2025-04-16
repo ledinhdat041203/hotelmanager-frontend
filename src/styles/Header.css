@@ -76,3 +76,71 @@
   font-weight: bold;
   color: #ffffff; /* Màu chữ trắng */
 }
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 60px; /* Đặt menu ngay dưới avatar */
+  right: 16px; /* Căn phải */
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  z-index: 1000;
+}
+
+/* Dropdown item */
+.dropdown-item {
+  padding: 8px 16px;
+  width: 100%;
+  text-align: left;
+  background-color: transparent;
+  border: none;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f3f4f6;
+}
+
+/* Menu icon */
+.menu-icon {
+  font-size: 16px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  margin-left: 8px;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+}
+
+.menu-icon:hover {
+  color: #d1fae5;
+}
+
+/* Icon hình tròn */
+.icon-circle {
+  width: 40px; /* Kích thước hình tròn */
+  height: 40px;
+  background-color: #2bb43d; /* Màu nền xanh lá */
+  border-radius: 50%; /* Bo tròn để tạo hình tròn */
+  display: flex;
+  align-items: center; /* Căn giữa icon theo chiều dọc */
+  justify-content: center; /* Căn giữa icon theo chiều ngang */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.icon-circle i {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.icon-circle:hover {
+  background-color: #2a9675; /* Màu nền khi hover */
+  transform: scale(1.1); /* Hiệu ứng phóng to khi hover */
+}
