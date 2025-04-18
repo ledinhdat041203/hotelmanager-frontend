@@ -150,7 +150,6 @@
 
 /* Container cho header table*/
 .room-selection-modal .table-header {
-  display: flex;
   min-height: 48px;
   justify-content: space-between; /* Căn đều các phần tử */
   align-items: center; /* Căn giữa theo chiều dọc */

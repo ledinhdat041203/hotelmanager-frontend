@@ -18,6 +18,16 @@ const Header = () => {
         <span> SOLARIA</span>
       </div>
 
+     
+
+      <div className="tabs">
+        <button className="tab-item">Tổng quan</button>
+        <button className="tab-item">Báo cáo</button>
+        <button className="tab-item">Phòng</button>
+        <button className="tab-item">Hàng hóa</button>
+        <button className="tab-item">Báo cáo</button>
+      </div>
+
       <div className="user-info">
         <img src={avata} alt="User Avatar" className="avatar" />
         <div className="user-name">John Doe</div>

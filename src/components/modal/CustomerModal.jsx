@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CustomerModal.css";
+import "../../styles/modal/CustomerModal.css";
 
 export function CustomerModal({ isOpen, onClose }) {
   if (!isOpen) return null;

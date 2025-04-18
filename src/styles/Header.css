@@ -21,6 +21,8 @@
   display: flex;
   align-items: center; /* Căn giữa logo và chữ theo chiều dọc */
   gap: 12px; /* Tạo khoảng cách giữa logo và chữ */
+  border-right: 1px solid #e5e0e0; /* Đường viền bên phải logo */
+  padding-right: 32px;
 }
 
 .logo-image {
@@ -37,22 +39,37 @@
   letter-spacing: 1px; /* Khoảng cách giữa các chữ cái */
 }
 
-/* Navigation links */
-.nav-links {
+/* Tabs Container */
+.header-container .tabs {
   display: flex;
-  gap: 16px;
+  justify-content: flex-start; /* Căn trái các tabs */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  gap: 16px; /* Khoảng cách giữa các tabs */
+  flex: 1; /* Tabs chiếm không gian còn lại giữa logo và user-info */
+  margin: 16px;
 }
 
-.nav-link {
-  text-decoration: none;
+/* Tab Item */
+.header-container .tab-item {
+  background-color: transparent;
+  border: none;
   font-size: 16px;
-  color: #ffffff; /* Màu chữ trắng */
-  font-weight: 500;
-  transition: color 0.3s ease;
+  font-weight: 600;
+  color: white; /* Màu chữ */
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.nav-link:hover {
-  color: #d1fae5; /* Màu xanh lá nhạt khi hover */
+.header-container .tab-item:hover {
+  background-color: #f3f4f6; /* Màu nền khi hover */
+  color: #10b981; /* Màu chữ khi hover */
+}
+
+.header-container .tab-item.active {
+  background-color: #10b981; /* Màu nền cho tab đang hoạt động */
+  color: #ffffff; /* Màu chữ trắng */
 }
 
 /* User info */
