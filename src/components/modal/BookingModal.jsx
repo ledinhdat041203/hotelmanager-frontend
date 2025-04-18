@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../styles/BookingModal.css";
+import "../../styles/modal/BookingModal.css";
 import { CustomerModal } from "./CustomerModal";
 import { type } from "@testing-library/user-event/dist/type";
 import ServiceModal from "./ServiceModal";

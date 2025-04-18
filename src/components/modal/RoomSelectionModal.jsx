@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../styles/RoomSelectionModal.css";
+import "../../styles/modal/RoomSelectionModal.css";
 import BookingModal from "./BookingModal";
 
 const roomTypes = [
