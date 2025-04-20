@@ -21,9 +21,30 @@ const AppRoutes = () => {
             <div className="layout-container">
               <Header />
               <Routes className="content">
-                <Route path="/booking" element={<Booking />} />
-                <Route path="/booking-detail" element={<BookingDetail />} />
-                <Route path="/room-management" element={<RoomManagement />} />
+                <Route
+                  path="/booking"
+                  element={
+                    <ProtectedRoute>
+                      <Booking />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/booking-detail"
+                  element={
+                    <ProtectedRoute>
+                      <BookingDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/room-management"
+                  element={
+                    <ProtectedRoute>
+                      <RoomManagement />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/"
                   element={

@@ -274,6 +274,7 @@ const RoomManagement = () => {
               <th>Giá qua đêm</th>
               <th>Trạng thái</th>
               <th>Chi nhánh</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -301,7 +302,7 @@ const RoomManagement = () => {
                     className="action-button delete-button"
                     onClick={() => handleDeleteRoomType(room.id)}
                   >
-                    <i className="fas fa-trash"></i> {/* Icon Delete */}
+                    <i class="fa-solid fa-lock"></i>
                   </button>
                 </td>
               </tr>
