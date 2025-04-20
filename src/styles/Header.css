@@ -14,6 +14,7 @@
   z-index: 1000;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
+  gap: 16px; /* Khoảng cách giữa các phần tử trong header */
 }
 
 /* Logo */
@@ -70,6 +71,24 @@
 .header-container .tab-item.active {
   background-color: #10b981; /* Màu nền cho tab đang hoạt động */
   color: #ffffff; /* Màu chữ trắng */
+}
+
+.btn-manager {
+  background-color: #48e064; /* Màu nền xanh lá */
+  color: #ffffff; /* Màu chữ trắng */
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  gap: 32px; /* Khoảng cách giữa các nút */
+  margin-left: auto; /* Đẩy nút sang bên phải */
+}
+
+.btn-manager span {
+  margin-left: 8px; /* Khoảng cách giữa icon và chữ */
 }
 
 /* User info */
