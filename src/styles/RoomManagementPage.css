@@ -4,7 +4,8 @@
   background-color: #f9fafb; /* Màu nền nhạt */
   border-radius: 8px; /* Bo góc */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng mờ */
-  margin-top: 64px;
+  padding-top: 72px;
+  max-height: calc(100vh - 64px); /* Chiều cao tối đa */
 }
 
 /* Tiêu đề */
@@ -119,7 +120,7 @@
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .data-table thead {
@@ -184,4 +185,32 @@
 
 .dropdown-item:hover {
   background-color: #f3f4f6; /* Màu nền khi hover */
+}
+
+/* Action Buttons */
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0 4px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.action-button i {
+  color: #374151; /* Màu biểu tượng */
+}
+
+.action-button:hover {
+  background-color: #f3f4f6; /* Màu nền khi hover */
+}
+
+.edit-button i {
+  color: #10b981; /* Màu xanh cho nút Edit */
+}
+
+.delete-button i {
+  color: #ef4444; /* Màu đỏ cho nút Delete */
 }

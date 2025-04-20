@@ -46,6 +46,59 @@ const data = [
   },
 ];
 
+const rooms = [
+  {
+    id: 1,
+    name: "Phòng 101",
+    roomType: "Phòng 01 giường đôi",
+    priceHour: "180,000",
+    priceDay: "720,000",
+    priceNight: "720,000",
+    status: "Đang kinh doanh",
+    branch: "Chi nhánh trung tâm",
+  },
+  {
+    id: 2,
+    name: "Phòng 102",
+    roomType: "Phòng 01 giường đơn",
+    priceHour: "150,000",
+    priceDay: "600,000",
+    priceNight: "600,000",
+    status: "Đang kinh doanh",
+    branch: "Chi nhánh trung tâm",
+  },
+  {
+    id: 3,
+    name: "Phòng 103",
+    roomType: "Phòng 02 giường đơn",
+    priceHour: "200,000",
+    priceDay: "800,000",
+    priceNight: "800,000",
+    status: "Ngừng kinh doanh",
+    branch: "Chi nhánh khác",
+  },
+  {
+    id: 4,
+    name: "Phòng 201",
+    roomType: "Phòng 01 giường đôi",
+    priceHour: "180,000",
+    priceDay: "720,000",
+    priceNight: "720,000",
+    status: "Đang kinh doanh",
+    branch: "Chi nhánh trung tâm",
+  },
+  {
+    id: 5,
+    name: "Phòng 202",
+    roomType: "Phòng 01 giường đơn",
+    priceHour: "150,000",
+    priceDay: "600,000",
+    priceNight: "600,000",
+    status: "Đang kinh doanh",
+    branch: "Chi nhánh khác",
+  },
+];
+
 const RoomManagement = () => {
   const [tab, setTab] = useState(0);
   const [status, setStatus] = useState("active");
@@ -54,6 +107,8 @@ const RoomManagement = () => {
   const [isRoomTypeModalOpen, setIsRoomTypeModalOpen] = useState(false);
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const handleChangeTab = (newValue) => setTab(newValue);
+  const [roomData, setRoomData] = useState(rooms); // Quản lý danh sách phòng
+  const [roomTypeData, setRoomTypeData] = useState(data); // Quản lý danh sách hạng phòng
   const [roomType, setRoomType] = useState({
     code: `RT-${Date.now()}`, // Mã hạng phòng tự động
     name: "",
@@ -61,6 +116,34 @@ const RoomManagement = () => {
     priceDay: "",
     priceNight: "",
   });
+
+  const handleEditRoomType = (roomType) => {
+    console.log("Chỉnh sửa phòng:", roomType);
+    // Thêm logic mở modal chỉnh sửa phòng
+    setIsRoomTypeModalOpen(true);
+  };
+
+  const handleDeleteRoomType = (roomTypeId) => {
+    console.log("Xóa phòng có ID:", roomTypeId);
+    // Thêm logic xóa phòng
+    const updatedRoomTypeData = roomTypeData.filter(
+      (roomType) => roomType.id !== roomTypeId
+    );
+    setRoomTypeData(updatedRoomTypeData); // Cập nhật danh sách phòng
+  };
+
+  const handleEditRoom = (room) => {
+    console.log("Chỉnh sửa phòng:", room);
+    // Thêm logic mở modal chỉnh sửa phòng
+    setIsRoomModalOpen(true);
+  };
+
+  const handleDeleteRoom = (roomId) => {
+    console.log("Xóa phòng có ID:", roomId);
+    // Thêm logic xóa phòng
+    const updatedRoomData = roomData.filter((room) => room.id !== roomId);
+    setRoomData(updatedRoomData); // Cập nhật danh sách phòng
+  };
 
   const handleSaveRoom = (roomData) => {
     console.log("Dữ liệu phòng mới:", roomData);
@@ -178,38 +261,99 @@ const RoomManagement = () => {
         </div>
       </div>
 
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Mã hạng phòng</th>
-            <th>Tên hạng phòng</th>
-            <th>SL phòng</th>
-            <th>Giá giờ</th>
-            <th>Giá cả ngày</th>
-            <th>Giá qua đêm</th>
-            <th>Trạng thái</th>
-            <th>Chi nhánh</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((room, idx) => (
-            <tr key={idx}>
-              <td>
-                <input type="checkbox" />
-              </td>
-              <td>{room.code}</td>
-              <td>{room.name}</td>
-              <td>{room.count}</td>
-              <td>{room.priceHour}</td>
-              <td>{room.priceDay}</td>
-              <td>{room.priceNight}</td>
-              <td>{room.status}</td>
-              <td>{room.branch}</td>
+      {tab === 0 ? (
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Mã hạng phòng</th>
+              <th>Tên hạng phòng</th>
+              <th>SL phòng</th>
+              <th>Giá giờ</th>
+              <th>Giá cả ngày</th>
+              <th>Giá qua đêm</th>
+              <th>Trạng thái</th>
+              <th>Chi nhánh</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((room, idx) => (
+              <tr key={idx}>
+                <td>
+                  <input type="checkbox" />
+                </td>
+                <td>{room.code}</td>
+                <td>{room.name}</td>
+                <td>{room.count}</td>
+                <td>{room.priceHour}</td>
+                <td>{room.priceDay}</td>
+                <td>{room.priceNight}</td>
+                <td>{room.status}</td>
+                <td>{room.branch}</td>
+                <td>
+                  <button
+                    className="action-button edit-button"
+                    onClick={() => handleEditRoomType(room)}
+                  >
+                    <i className="fas fa-edit"></i> {/* Icon Edit */}
+                  </button>
+                  <button
+                    className="action-button delete-button"
+                    onClick={() => handleDeleteRoomType(room.id)}
+                  >
+                    <i className="fas fa-trash"></i> {/* Icon Delete */}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Tên phòng</th>
+              <th>Loại phòng</th>
+              <th>Giá giờ</th>
+              <th>Giá cả ngày</th>
+              <th>Giá qua đêm</th>
+              <th>Trạng thái</th>
+              <th>Chi nhánh</th>
+            </tr>
+          </thead>
+          <tbody>
+            {roomData.map((room) => (
+              <tr key={room.id}>
+                <td>
+                  <input type="checkbox" />
+                </td>
+                <td>{room.name}</td>
+                <td>{room.roomType}</td>
+                <td>{room.priceHour}</td>
+                <td>{room.priceDay}</td>
+                <td>{room.priceNight}</td>
+                <td>{room.status}</td>
+                <td>{room.branch}</td>
+                <td>
+                  <button
+                    className="action-button edit-button"
+                    onClick={() => handleEditRoom(room)}
+                  >
+                    <i className="fas fa-edit"></i> {/* Icon Edit */}
+                  </button>
+                  <button
+                    className="action-button delete-button"
+                    onClick={() => handleDeleteRoom(room.id)}
+                  >
+                    <i className="fas fa-trash"></i> {/* Icon Delete */}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {isRoomTypeModalOpen && (
         <RoomTypeModal
