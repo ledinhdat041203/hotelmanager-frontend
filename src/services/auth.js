@@ -6,9 +6,7 @@ export const login = async (userName, password) => {
     const res = await loginApi(userName, password);
     const resData = res.data;
     if (resData.statusCode === 200) {
-      console.log("status === 200", resData);
       const data = resData.data;
-
       return data;
     } else {
       throw new Error("Đăng nhập thất bại");
@@ -18,6 +16,7 @@ export const login = async (userName, password) => {
     const err = error.response?.data || {
       message: "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.",
     };
+    console.log(err);
     toast.error(err.message);
   }
 };

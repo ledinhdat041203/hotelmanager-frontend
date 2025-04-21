@@ -1,50 +1,13 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "../styles/RoomManagementPage.css";
 import RoomTypeModal from "../components/modal/RoomTypeModal";
 import RoomModal from "../components/modal/RoomModal";
-
-const data = [
-  {
-    code: "Double Bedroom",
-    name: "Phòng 01 giường đôi cho 2 người",
-    count: 3,
-    priceHour: "180,000",
-    priceDay: "720,000",
-    priceNight: "720,000",
-    status: "Đang kinh doanh",
-    branch: "Chi nhánh trung tâm",
-  },
-  {
-    code: "Single Bedroom",
-    name: "Phòng 01 giường đơn",
-    count: 3,
-    priceHour: "150,000",
-    priceDay: "600,000",
-    priceNight: "600,000",
-    status: "Đang kinh doanh",
-    branch: "Chi nhánh trung tâm",
-  },
-  {
-    code: "Triple Bedroom",
-    name: "Phòng 01 giường đôi và 1 giường đơn cho 3 người",
-    count: 3,
-    priceHour: "250,000",
-    priceDay: "1,000,000",
-    priceNight: "1,000,000",
-    status: "Đang kinh doanh",
-    branch: "Chi nhánh trung tâm",
-  },
-  {
-    code: "Twin Bedroom",
-    name: "Phòng 02 giường đơn",
-    count: 3,
-    priceHour: "200,000",
-    priceDay: "800,000",
-    priceNight: "800,000",
-    status: "Đang kinh doanh",
-    branch: "Chi nhánh trung tâm",
-  },
-];
+import {
+  createRoomType,
+  searchRoomType,
+  updateRoomType,
+} from "../services/room-type";
+import { debounce } from "lodash";
 
 const rooms = [
   {
@@ -101,6 +64,7 @@ const rooms = [
 
 const RoomManagement = () => {
   const [tab, setTab] = useState(0);
+  const [searchData, setSearchData] = useState("");
   const [status, setStatus] = useState("active");
   const [branch, setBranch] = useState("Chi nhánh trung tâm");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Quản lý trạng thái menu thả xuống
@@ -108,18 +72,20 @@ const RoomManagement = () => {
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const handleChangeTab = (newValue) => setTab(newValue);
   const [roomData, setRoomData] = useState(rooms); // Quản lý danh sách phòng
-  const [roomTypeData, setRoomTypeData] = useState(data); // Quản lý danh sách hạng phòng
+  const [roomTypeData, setRoomTypeData] = useState([]); // Quản lý danh sách hạng phòng
   const [roomType, setRoomType] = useState({
-    code: `RT-${Date.now()}`, // Mã hạng phòng tự động
-    name: "",
-    priceHour: "",
-    priceDay: "",
-    priceNight: "",
+    roomTypeId: "",
+    roomTypeName: "",
+    priceByDay: 0,
+    priceByHour: 0,
+    priceOvernight: 0,
   });
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleEditRoomType = (roomType) => {
     console.log("Chỉnh sửa phòng:", roomType);
-    // Thêm logic mở modal chỉnh sửa phòng
+    setRoomType({ ...roomType });
+    setIsEdit(true);
     setIsRoomTypeModalOpen(true);
   };
 
@@ -150,9 +116,44 @@ const RoomManagement = () => {
     // Thêm logic lưu phòng tại đây
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     console.log("Hạng phòng mới:", roomType);
-    // Thêm logic lưu hạng phòng tại đây
+    if (!isEdit) {
+      const newRoomType = await createRoomType(
+        roomType.roomTypeName,
+        roomType.priceByDay,
+        roomType.priceByHour,
+        roomType.priceOvernight
+      );
+
+      if (newRoomType) {
+        setRoomTypeData((prev) => [...prev, newRoomType]);
+      }
+    } else {
+      console.log("update");
+      const updatedRoomType = await updateRoomType(
+        roomType.roomTypeId,
+        roomType.roomTypeName,
+        roomType.priceByDay,
+        roomType.priceByHour,
+        roomType.priceOvernight
+      );
+      if (updatedRoomType) {
+        setRoomTypeData((prev) =>
+          prev.map((item) =>
+            item.roomTypeId === updatedRoomType.roomTypeId
+              ? updatedRoomType
+              : item
+          )
+        );
+      }
+    }
+    setRoomType({
+      roomTypeName: "",
+      priceByDay: 0,
+      priceByHour: 0,
+      priceOvernight: 0,
+    });
     setIsRoomTypeModalOpen(false); // Đóng modal sau khi lưu
   };
 
@@ -170,6 +171,41 @@ const RoomManagement = () => {
     setIsDropdownOpen(false); // Đóng menu sau khi chọn
   };
 
+  const debouncedSearch = useCallback(
+    debounce(async (searchValue, statusValue) => {
+      try {
+        const roomTypes = await searchRoomType(searchValue, statusValue);
+        setRoomTypeData(roomTypes);
+        console.log("Kết quả tìm kiếm:", roomTypes);
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm:", error);
+      }
+    }, 1000), // Đợi 1 giây sau khi người dùng dừng nhập
+    []
+  );
+
+  const handleChangeSearchData = (e) => {
+    const newValue = e.target.value;
+    setSearchData(e.target.value);
+    debouncedSearch(newValue, status);
+  };
+
+  const handleChangeStatus = (e) => {
+    const newValue = e.target.value;
+    setStatus(newValue);
+    fetchRoomTypes(searchData, newValue); // Gọi hàm tìm kiếm với giá trị mới
+  };
+
+  const fetchRoomTypes = async (search, status) => {
+    const roomTypes = await searchRoomType(search, status);
+    if (roomTypes) {
+      setRoomTypeData(roomTypes);
+    }
+  };
+  useEffect(() => {
+    fetchRoomTypes(searchData, status);
+  }, []);
+
   return (
     <div className="container room-management">
       <h2>Hạng phòng & Phòng</h2>
@@ -177,8 +213,10 @@ const RoomManagement = () => {
       <div className="filter-row">
         <input
           type="text"
-          placeholder="Tìm kiếm hạng phòng"
+          placeholder="Tìm kiếm phòng/hạng phòng"
           className="search-input"
+          value={searchData}
+          onChange={(e) => handleChangeSearchData(e)}
         />
         <select
           value={branch}
@@ -196,7 +234,7 @@ const RoomManagement = () => {
             type="radio"
             value="active"
             checked={status === "active"}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => handleChangeStatus(e)}
           />{" "}
           Đang kinh doanh
         </label>
@@ -205,7 +243,7 @@ const RoomManagement = () => {
             type="radio"
             value="inactive"
             checked={status === "inactive"}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => handleChangeStatus(e)}
           />{" "}
           Ngừng kinh doanh
         </label>
@@ -214,7 +252,7 @@ const RoomManagement = () => {
             type="radio"
             value="all"
             checked={status === "all"}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => handleChangeStatus(e)}
           />{" "}
           Tất cả
         </label>
@@ -265,10 +303,8 @@ const RoomManagement = () => {
         <table className="data-table">
           <thead>
             <tr>
-              <th></th>
-              <th>Mã hạng phòng</th>
+              <th>STT</th>
               <th>Tên hạng phòng</th>
-              <th>SL phòng</th>
               <th>Giá giờ</th>
               <th>Giá cả ngày</th>
               <th>Giá qua đêm</th>
@@ -278,29 +314,29 @@ const RoomManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((room, idx) => (
-              <tr key={idx}>
+            {roomTypeData.map((roomType, idx) => (
+              <tr key={roomType.roomTypeId}>
+                <td>{idx + 1}.</td>
+                <td>{roomType.roomTypeName}</td>
+                <td>{roomType.priceByHour}</td>
+                <td>{roomType.priceByDay}</td>
+                <td>{roomType.priceOvernight}</td>
                 <td>
-                  <input type="checkbox" />
+                  {roomType.status === 1
+                    ? "Đang kinh doanh"
+                    : "Ngừng kinh doanh"}
                 </td>
-                <td>{room.code}</td>
-                <td>{room.name}</td>
-                <td>{room.count}</td>
-                <td>{room.priceHour}</td>
-                <td>{room.priceDay}</td>
-                <td>{room.priceNight}</td>
-                <td>{room.status}</td>
-                <td>{room.branch}</td>
+                <td>{branch}</td>
                 <td>
                   <button
                     className="action-button edit-button"
-                    onClick={() => handleEditRoomType(room)}
+                    onClick={() => handleEditRoomType(roomType)}
                   >
                     <i className="fas fa-edit"></i> {/* Icon Edit */}
                   </button>
                   <button
                     className="action-button delete-button"
-                    onClick={() => handleDeleteRoomType(room.id)}
+                    onClick={() => handleDeleteRoomType(roomType.id)}
                   >
                     <i class="fa-solid fa-lock"></i>
                   </button>
