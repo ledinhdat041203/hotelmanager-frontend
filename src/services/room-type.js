@@ -3,6 +3,7 @@ import {
   createRoomTypeAPI,
   searchRoomTypeAPI,
   updateRoomTypeAPI,
+  updateStatusRoomTypeAPI,
 } from "../api/room-type";
 
 const createRoomType = async (
@@ -41,7 +42,7 @@ const updateRoomType = async (
   priceByHour,
   priceOvernight
 ) => {
-  console.log("service");
+
   try {
     const res = await updateRoomTypeAPI(
       roomTypeId,
@@ -66,9 +67,29 @@ const updateRoomType = async (
   }
 };
 
+const updateStatusRoomType = async (roomTypeId, status) => {
+  try {
+    const res = await updateStatusRoomTypeAPI(roomTypeId, status);
+    const resData = res.data;
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      toast.success(resData.message);
+      return data;
+    } else {
+      throw new Error(
+        resData.message || "Cập nhật trạng thái loại phòng thất bại"
+      );
+    }
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message ||
+        "Cập nhật trạng thái loại phòng thất bại. Vui lòng kiểm tra lại thông tin."
+    );
+  }
+};
+
 const searchRoomType = async (searchData, status) => {
-  console.log("searchDate", searchData);
-  console.log("status", status);
+
   if (!searchData) {
     searchData = null;
   }
@@ -76,7 +97,7 @@ const searchRoomType = async (searchData, status) => {
     status = null;
   } else if (status === "active") {
     status = 1;
-  } else {
+  } else if (status === "inactive") {
     status = 0;
   }
 
@@ -97,4 +118,27 @@ const searchRoomType = async (searchData, status) => {
   }
 };
 
-export { createRoomType, searchRoomType, updateRoomType };
+const findAllRoomType = async () => {
+  try {
+    const res = await searchRoomTypeAPI();
+    const resData = res.data;
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      return data;
+    } else {
+      throw new Error(resData.message || "Tìm kiếm loại phòng thất bại");
+    }
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message ||
+        "Tìm kiếm loại phòng thất bại. Vui lòng kiểm tra lại thông tin."
+    );
+  }
+};
+export {
+  createRoomType,
+  searchRoomType,
+  updateRoomType,
+  findAllRoomType,
+  updateStatusRoomType,
+};

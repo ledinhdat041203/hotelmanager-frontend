@@ -1,5 +1,5 @@
 /* Overlay */
-.modal-overlay {
+.customer-modal .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
 }
 
 /* Modal container */
-.modal-container {
+.customer-modal .modal-container {
   background-color: white;
   width: 600px;
   border-radius: 12px;
@@ -23,7 +23,7 @@
 }
 
 /* Header */
-.modal-header {
+.customer-modal .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,13 +32,13 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.modal-title {
+.customer-modal .modal-title {
   font-size: 18px;
   font-weight: bold;
   color: #374151;
 }
 
-.modal-close {
+.customer-modal .modal-close {
   background: none;
   border: none;
   font-size: 20px;
@@ -51,35 +51,36 @@
 }
 
 /* Content */
-.modal-content {
+.customer-modal .modal-content {
   padding: 16px;
+  display: block;
 }
 
-.form-section {
+.customer-modal .form-section {
   margin-bottom: 24px;
 }
 
-.section-title {
+.customer-modal .section-title {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 12px;
   color: #374151;
 }
 
-.form-grid {
+.customer-modal .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-.form-group {
+.customer-modal .form-group {
   display: flex;
   flex-direction: column;
 }
 
-.form-input,
-.form-select,
-.form-textarea {
+.customer-modal .form-input,
+.customer-modal .form-select,
+.customer-modal .form-textarea {
   padding: 8px;
   border: 1px solid #d1d5db;
   border-radius: 4px;
@@ -95,7 +96,7 @@
 }
 
 /* Footer */
-.modal-footer {
+.customer-modal .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
@@ -104,7 +105,7 @@
   border-top: 1px solid #e5e7eb;
 }
 
-.btn-cancel {
+.customer-modal .btn-cancel {
   padding: 8px 16px;
   background-color: #e5e7eb;
   border: none;

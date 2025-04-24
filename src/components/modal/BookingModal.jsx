@@ -1,76 +1,84 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/modal/BookingModal.css";
-import { CustomerModal } from "./CustomerModal";
-import { type } from "@testing-library/user-event/dist/type";
-import ServiceModal from "./ServiceModal";
+import CustomerModal from "./CustomerModal";
+import { findByRoomType } from "../../services/room";
+import { addDays, format } from "date-fns";
+import { calculatePrice } from "../../utils/caculate-price";
+import { createBooking } from "../../services/booking";
 
-const roomTypes = [
-  {
-    roomTypeName: "Vip đôi",
-    priceByDay: 1500000,
-    priceByHour: 100000,
-    priceOvernight: 500000,
-  },
-  {
-    roomTypeName: "Thường đôi",
-    priceByDay: 1000000,
-    priceByHour: 80000,
-    priceOvernight: 400000,
-  },
-  {
-    roomTypeName: "Thường đơn",
-    priceByDay: 800000,
-    priceByHour: 60000,
-    priceOvernight: 300000,
-  },
-];
-
-const customers = [
-  { id: 1, name: "Nguyễn Văn LA", phone: "0123456789", idCard: "123456789" },
-  { id: 2, name: "Trần Thị LB", phone: "0987654321", idCard: "987654321" },
-  { id: 3, name: "Lê Văn LC", phone: "0912345678", idCard: "456789123" },
-  { id: 4, name: "Phạm Thị LD", phone: "0934567890", idCard: "789123456" },
-  { id: 1, name: "Nguyễn VănL A", phone: "0123456789", idCard: "123456789" },
-  { id: 2, name: "Trần Thị LB", phone: "0987654321", idCard: "987654321" },
-  { id: 3, name: "Lê Văn lC", phone: "0912345678", idCard: "456789123" },
-  { id: 4, name: "Phạm Thị D", phone: "0934567890", idCard: "789123456" },
-];
 const channels = [
   { id: "direct", name: "Khách đến trực tiếp", icon: "fa-solid fa-store" },
   { id: "facebook", name: "Facebook", icon: "fa-brands fa-facebook" },
   { id: "zalo", name: "Zalo", icon: "fa-solid fa-comment-dots" },
-  { id: "online", name: "Đặt online", icon: "fa-solid [[fa-globe" },
+  { id: "online", name: "Đặt online", icon: "fa-solid fa-globe" },
 ];
 
-const rooms = [
-  { id: 1, name: "P101" },
-  { id: 2, name: "P102" },
-  { id: 3, name: "P103" },
-  { id: 4, name: "P104" },
-  { id: 5, name: "P201" },
-  { id: 6, name: "P202" },
-];
-
-const booking = {
-  roomTypes: "Vip đơn",
-  roomName: "P101",
-  type: "day",
-  checkInDate: "2023-10-01T14:00",
-  checkOutDate: "2023-10-01T16:00",
-  totalPrice: 2000000,
-};
-const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
+const BookingModal = ({
+  isOpen,
+  onClose,
+  onOpenServiceModal,
+  room,
+  bookingInfo,
+  setBookingRoom,
+}) => {
   const [selectedChannel, setSelectedChannel] = useState("direct"); // Kênh bán mặc định
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
-
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [customer, setCustomer] = useState("");
+  const [customers, setCustomers] = useState([]);
+  const [booking, setBooking] = useState({
+    roomTypeId: "",
+    roomId: "",
+    roomName: "",
+    type: "Ngày",
+    checkInDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+    checkOutDate: format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm"),
+    unitPrice: 0,
+    totalPrice: 0,
+    depositAmount: 0,
+    channel: "Khách đến trực tiếp",
+  });
+  const [rooms, setRooms] = useState([]);
 
-  const [roomName, setRoomName] = useState(booking.roomName); // Giá trị phòng hiện tại
-  const [filteredRooms, setFilteredRooms] = useState([]); // Danh sách phòng gợi ý
-  const [searchRoom, setSearchRoom] = useState(""); // Giá trị input phòng
+  const [filteredRooms, setFilteredRooms] = useState([]);
+  const [searchRoom, setSearchRoom] = useState("");
+  const [roomType, setRoomType] = useState({
+    roomTypeId: "",
+    roomTypeName: "",
+    priceByDay: 0,
+    priceByHour: 0,
+    priceOvernight: 0,
+    status: 1,
+  });
+
+  const [customer, setCustomer] = useState({
+    customerName: "",
+    customerPhone: "",
+    cccd: "",
+  });
+
+  const handleBooking = async (status) => {
+    const newBooking = await createBooking({
+      customerName: customer.customerName,
+      customerPhone: customer.customerPhone,
+      cccd: customer.cccd,
+      roomId: booking.roomId,
+      type: booking.type,
+      status,
+      checkInDate: booking.checkInDate,
+      checkOutDate: booking.checkOutDate,
+      unitPrice: booking.unitPrice,
+      totalPrice: booking.totalPrice,
+      depositAmount: booking.depositAmount,
+      channel: booking.channel,
+    });
+    if (newBooking) {
+      const state =
+        status === "Đã nhận phòng" ? "Đang sử dụng" : "Chưa nhận phòng";
+      setBookingRoom({ ...newBooking.room, state: state });
+    }
+  };
 
   const handleRoomSearchChange = (e) => {
     const value = e.target.value;
@@ -81,16 +89,20 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
       setFilteredRooms([]);
     } else {
       const filtered = rooms.filter((room) =>
-        room.name.toLowerCase().includes(value.toLowerCase())
+        room.roomName.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredRooms(filtered);
     }
   };
 
   const handleSelectRoom = (room) => {
-    setRoomName(room.name); // Cập nhật tên phòng
-    setSearchRoom(room.name); // Điền tên phòng vào input
+    setSearchRoom(room.roomName); // Điền tên phòng vào input
     setFilteredRooms([]); // Ẩn danh sách gợi ý
+    setBooking((prev) => ({
+      ...prev,
+      roomName: room.roomName,
+      roomId: room.roomId,
+    }));
   };
 
   const handleSearchChange = (e) => {
@@ -125,18 +137,113 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
     setIsCustomerModalOpen(false);
   };
 
+  const fetchRoomTypes = async (roomType) => {
+    const rooms = await findByRoomType(roomType.roomTypeId, 1);
+    if (rooms) {
+      setRooms(rooms);
+    } else {
+      setRooms([]);
+      handleCloseBookingModal();
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      console.log(room);
+      if (room.roomId) {
+        setRoomType(room?.roomType);
+        setBooking((prev) => ({
+          ...prev,
+          roomName: room.roomName,
+          roomId: room.roomId,
+          roomTypeId: room.roomType.roomTypeId,
+          unitPrice: room.roomType.priceByDay,
+        }));
+        setSearchRoom(room.roomName);
+        const totalPrice = previewPrice(room?.roomType);
+        setBooking((prev) => ({
+          ...prev,
+          totalPrice,
+        }));
+        fetchRoomTypes(room?.roomType);
+      } else {
+        setRoomType(bookingInfo?.roomType);
+        setBooking((prev) => ({
+          ...prev,
+          roomTypeId: bookingInfo.roomType.roomTypeId,
+          unitPrice: bookingInfo.roomType.priceByDay,
+          checkInDate: bookingInfo.checkInDate,
+          checkOutDate: bookingInfo.checkOutDate,
+          type: bookingInfo.type,
+          totalPrice: bookingInfo.totalPrice,
+        }));
+        console.log("info", bookingInfo);
+        fetchRoomTypes(bookingInfo?.roomType);
+      }
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    console.log("booking", booking);
+  }, [booking]);
+
+  const previewPrice = (roomType) => {
+    const price =
+      booking.type == "Ngày"
+        ? roomType.priceByDay
+        : booking.type == "Đêm"
+        ? roomType.priceOvernight
+        : roomType.priceByHour;
+
+    const totalPrice = calculatePrice({
+      checkInStr: booking.checkInDate,
+      checkOutStr: booking.checkOutDate,
+      type: booking.type,
+      price,
+    });
+
+    return totalPrice;
+  };
+
+  const handleCloseBookingModal = () => {
+    setBooking({
+      roomTypeId: "",
+      roomId: "",
+      roomName: "",
+      type: "Ngày",
+      checkInDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      checkOutDate: format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm"),
+      unitPrice: 0,
+      totalPrice: 0,
+      depositAmount: 0,
+    });
+    setCustomer({ customerName: "", customerPhone: "", cccd: "" });
+    setFilteredRooms([]);
+    setSearchRoom("");
+    onClose();
+  };
+  useEffect(() => {
+    const totalPrice = previewPrice(roomType);
+    console.log("ok", totalPrice);
+
+    setBooking((prev) => ({ ...prev, totalPrice }));
+  }, [booking.checkInDate, booking.checkOutDate, booking.type]);
+
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay booking-modal">
       <div className="modal">
-        <button className="close-button" onClick={onClose}>
+        <button
+          className="close-button"
+          onClick={() => handleCloseBookingModal()}
+        >
           <i class="fa-regular fa-circle-xmark"></i>
         </button>
         <h2>Đặt/Nhận phòng</h2>
 
         <div className="booking-header-container">
-          {customer === "" ? (
+          {customer.customerName === "" ? (
             <div className="search-customer">
               <i class="fa-solid fa-magnifying-glass"></i>
               <input
@@ -169,10 +276,14 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
           ) : (
             <div className="search-customer">
               <i class="fa-regular fa-user"></i>
-              <span>{searchTerm}</span>
+              <span>{customer.customerName}</span>
               <button
                 onClick={() => {
-                  setCustomer("");
+                  setCustomer({
+                    customerName: "",
+                    customerPhone: "",
+                    cccd: "",
+                  });
                   setSearchTerm("");
                 }}
               >
@@ -199,6 +310,10 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
                     key={channel.id}
                     className="channel-option"
                     onClick={() => {
+                      setBooking((prev) => ({
+                        ...prev,
+                        channel: channel.name,
+                      }));
                       setSelectedChannel(channel.id);
                       setIsDropdownOpen(false);
                     }}
@@ -223,7 +338,7 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
 
         <div className="table-body">
           <div className="table-row">
-            <span>{booking.roomTypes}</span>
+            <span>{roomType.roomTypeName}</span>
 
             <div className="autocomplete-container">
               <input
@@ -232,16 +347,24 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
                 placeholder="Tên phòng"
                 value={searchRoom}
                 onChange={handleRoomSearchChange}
+                onFocus={() => {
+                  const filtered = rooms.filter((room) =>
+                    room.roomName
+                      .toLowerCase()
+                      .includes(searchRoom.toLowerCase())
+                  );
+                  setFilteredRooms(filtered);
+                }}
               />
               {filteredRooms.length > 0 && (
                 <div className="autocomplete-dropdown">
                   {filteredRooms.map((room) => (
                     <div
-                      key={room.id}
+                      key={room.roomId}
                       className="autocomplete-item"
                       onClick={() => handleSelectRoom(room)}
                     >
-                      {room.name}
+                      {room.roomName}
                     </div>
                   ))}
                 </div>
@@ -250,29 +373,67 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
 
             <select
               className="input-select"
-              defaultValue={booking.type} // Giá trị mặc định
+              value={booking.type} // Giá trị mặc định
               onChange={(e) => {
-                // Xử lý khi người dùng thay đổi lựa chọn
-                console.log("Selected type:", e.target.value);
+                setBooking((prev) => ({ ...prev, type: e.target.value }));
               }}
             >
-              <option value="day">Ngày</option>
-              <option value="night">Đêm</option>
-              <option value="hour">Giờ</option>
+              <option value="Ngày">Ngày</option>
+              <option value="Đêm">Đêm</option>
+              <option value="Giờ">Giờ</option>
             </select>
 
             <input
               type="datetime-local"
               className="input-date"
               defaultValue={booking.checkInDate}
+              onChange={(e) =>
+                setBooking((prev) => ({ ...prev, checkInDate: e.target.value }))
+              }
             />
             <input
               type="datetime-local"
               className="input-date"
               defaultValue={booking.checkOutDate}
+              onChange={(e) =>
+                setBooking((prev) => ({
+                  ...prev,
+                  checkOutDate: e.target.value,
+                }))
+              }
             />
-            <span style={{ fontWeight: 600 }}>{booking.totalPrice}</span>
+            <span style={{ fontWeight: 600 }}>
+              {booking.totalPrice.toLocaleString()} VNĐ
+            </span>
           </div>
+        </div>
+
+        <div className="payment">
+          <span>Khách cần trả: {booking.totalPrice.toLocaleString()} VNĐ</span>
+          <span>
+            Khách đặt cọc:{" "}
+            <input
+              type="text"
+              className="deposit-input"
+              placeholder="Nhập số tiền"
+              onFocus={(e) => {
+                e.target.select();
+              }}
+              value={booking.depositAmount.toLocaleString("vi-VN") || ""}
+              onBlur={(e) => {
+                if (e.target.value === "") {
+                  setBooking((prev) => ({ ...prev, depositAmount: 0 }));
+                }
+              }}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9]/g, ""); // Chỉ giữ số
+                setBooking((prev) => ({
+                  ...prev,
+                  depositAmount: Number(raw) ? Number(raw) : 0,
+                }));
+              }}
+            />
+          </span>
         </div>
 
         <div className="button-group">
@@ -280,12 +441,17 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
             <i class="fa-solid fa-circle-plus"></i>
             <span>Thêm dịch vụ</span>
           </div>
-          <button className="add-button" style={{ padding: "8px 14px" }}>
+          <button
+            className="add-button"
+            style={{ padding: "8px 14px" }}
+            onClick={() => handleBooking("Đã nhận phòng")}
+          >
             Nhận phòng
           </button>
           <button
             className="add-button"
             style={{ padding: "16px", backgroundColor: "#ff8800" }}
+            onClick={() => handleBooking("Chưa nhận phòng")}
           >
             Đặt trước
           </button>
@@ -294,6 +460,8 @@ const BookingModal = ({ isOpen, onClose, onOpenServiceModal }) => {
       <CustomerModal
         isOpen={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
+        custommer={customer}
+        setCustomer={setCustomer}
       />
     </div>
   );

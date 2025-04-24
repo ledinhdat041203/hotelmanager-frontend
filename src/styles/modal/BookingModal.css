@@ -17,7 +17,7 @@
 .booking-modal .modal {
   position: relative;
   background-color: white;
-  padding: 20px;
+  padding: 24px;
   border-radius: 8px;
   width: 80%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -280,6 +280,7 @@
   flex-direction: column;
   gap: 8px;
   margin-top: 8px;
+  overflow-y: unset;
 }
 
 /* Table row */
@@ -295,6 +296,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease; /* Hiệu ứng khi hover */
   font-size: 16px;
   font-weight: 500;
+  max-height: 100px;
 }
 
 .table-row:hover {
@@ -314,7 +316,7 @@
 }
 
 /* Dropdown gợi ý khách hàng */
-.autocomplete-dropdown {
+.booking-modal .autocomplete-dropdown {
   position: absolute;
   top: 110%; /* Đặt ngay bên dưới input */
   left: 0;
@@ -326,7 +328,7 @@
   overflow-y: auto;
 }
 
-.autocomplete-item {
+.booking-modal .autocomplete-item {
   padding: 8px 12px;
   display: flex;
   flex-direction: column;
@@ -418,12 +420,21 @@
 
 /*auto complete*/
 /* Container cho autocomplete */
-.autocomplete-container {
+.booking-modal .autocomplete-container {
   position: relative;
+  overflow: visible;
   width: 100%;
+  /* z-index: 9999; */
 }
 
 /* Input autocomplete */
+
+.autocomplete-input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
 .autocomplete-input {
   width: 100%;
   padding: 8px;
@@ -439,16 +450,31 @@
 }
 
 /* Dropdown gợi ý */
+.dropdown-button {
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-left: none; /* Loại bỏ viền trái để nối với input */
+  background-color: #f3f4f6;
+  border-radius: 0 4px 4px 0; /* Bo góc phải */
+  cursor: pointer;
+}
+
+.dropdown-button i {
+  font-size: 14px;
+  color: #374151;
+}
+
 .autocomplete-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
+  z-index: 1000;
   width: 100%;
   background-color: white;
   border: 1px solid #d1d5db;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  z-index: 9999;
   max-height: 200px;
   overflow-y: auto;
 }
@@ -458,10 +484,45 @@
   padding: 8px 12px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  z-index: 9999;
 }
 
 .autocomplete-item:hover {
   background-color: #f3f4f6;
+}
+
+.payment {
+  padding: 24px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column; /* Hiển thị các phần tử theo chiều dọc */
+  background-color: #f3f4f6; /* Màu nền nhạt */
+  width: fit-content; /* Chiều rộng vừa đủ với nội dung */
+  border-radius: 8px; /* Bo góc */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng mờ */
+  gap: 8px; /* Khoảng cách giữa các phần tử */
+  font-size: 16px; /* Kích thước chữ */
+  font-weight: 600; /* Độ đậm chữ */
+  color: #374151; /* Màu chữ */
+  margin-left: auto;
+  min-width: 300px;
+}
+
+.deposit-input {
+  padding: 8px;
+  border: none;
+  border-bottom: 1px solid #d1d5db;
+  border-radius: 0;
+  width: 150px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+  background-color: transparent;
+}
+
+.deposit-input:focus {
+  outline: none;
+  border-bottom: 1px solid #10b981; /* Màu viền khi focus */
 }
 
 /* Container chứa các nút */

@@ -24,7 +24,7 @@ const LoginPage = () => {
   const handleLogin = async () => {
     const res = await login(userName, password);
     if (res) {
-      loginContext(res.accsessToken, res.user);
+      loginContext(res.access_token, res.user);
       navigate("/booking");
     }
   };

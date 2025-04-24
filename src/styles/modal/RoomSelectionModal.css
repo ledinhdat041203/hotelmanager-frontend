@@ -197,6 +197,8 @@
   flex-direction: column;
   gap: 8px;
   margin-top: 8px;
+  max-height: 50vh;
+  overflow-y: auto;
 }
 
 /* Table row */
