@@ -1,62 +1,56 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
+
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
-import ProtectedRoute from "../components/ProtectedRoute";
 import Booking from "../pages/BookingPage";
-import Header from "../components/Header";
 import BookingDetail from "../pages/BookingDetailPage";
-import "../styles/Layout.css";
 import RoomManagement from "../pages/RoomManagementPage";
+import Header from "../components/Header";
+import ProtectedRoute from "../components/ProtectedRoute";
+
+import "../styles/Layout.css";
+
+// Layout dùng chung
+const Layout = () => {
+  return (
+    <div className="layout-container">
+      <Header />
+      <div className="content">
+        <Outlet />
+      </div>
+    </div>
+  );
+};
 
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
+        {/* Trang đăng nhập không cần bảo vệ */}
         <Route path="/login" element={<LoginPage />} />
 
+        {/* Layout và các trang bên trong được bảo vệ */}
         <Route
-          path="/*"
           element={
-            <div className="layout-container">
-              <Header />
-              <Routes className="content">
-                <Route
-                  path="/booking"
-                  element={
-                    <ProtectedRoute>
-                      <Booking />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/booking-detail"
-                  element={
-                    <ProtectedRoute>
-                      <BookingDetail />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/room-management"
-                  element={
-                    <ProtectedRoute>
-                      <RoomManagement />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <HomePage />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </div>
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
           }
-        />
+        >
+          {/* Mặc định chuyển hướng về /booking */}
+          <Route index element={<Navigate to="booking" replace />} />
+          <Route path="booking" element={<Booking />} />
+          <Route path="booking-detail" element={<BookingDetail />} />
+          <Route path="room-management" element={<RoomManagement />} />
+          <Route path="home" element={<HomePage />} />
+        </Route>
       </Routes>
     </Router>
   );

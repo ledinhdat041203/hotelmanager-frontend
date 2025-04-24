@@ -1,21 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../../styles/modal/CustomerModal.css";
 
-export function CustomerModal({ isOpen, onClose }) {
-  if (!isOpen) return null;
+const CustomerModal = ({ isOpen, onClose, custommer, setCustomer }) => {
+  useEffect(() => {
+    console.log("customer", custommer);
+  }, [custommer]);
 
   const handleSubmit = () => {
     // Xử lý lưu thông tin khách hàng
     onClose();
   };
 
+  const handleCloseModal = () => {
+    setCustomer({ customerName: "", customerPhone: "", cccd: "" });
+    onClose();
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCustomer((prev) => ({ ...prev, [name]: value }));
+  };
+  if (!isOpen) return null;
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay customer-modal">
       <div className="modal-container">
         {/* Header */}
         <div className="modal-header">
           <h2 className="modal-title">Thêm mới khách hàng</h2>
-          <button className="modal-close" onClick={onClose}>
+          <button className="modal-close" onClick={handleCloseModal}>
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
@@ -30,8 +42,11 @@ export function CustomerModal({ isOpen, onClose }) {
                 <input
                   type="text"
                   id="customerName"
+                  name="customerName"
                   className="form-input"
                   placeholder="Nhập tên khách hàng"
+                  value={custommer.customerName}
+                  onChange={(e) => handleInputChange(e)}
                 />
               </div>
               <div className="form-group">
@@ -39,8 +54,10 @@ export function CustomerModal({ isOpen, onClose }) {
                 <input
                   type="text"
                   id="phone"
+                  name="customerPhone"
                   className="form-input"
                   placeholder="Nhập số điện thoại"
+                  onChange={(e) => handleInputChange(e)}
                 />
               </div>
               <div className="form-group">
@@ -63,12 +80,13 @@ export function CustomerModal({ isOpen, onClose }) {
           <div className="form-section">
             <div className="form-grid">
               <div className="form-group">
-                <label htmlFor="address">Địa chỉ</label>
+                <label htmlFor="address">Căn cước công dân</label>
                 <input
                   type="text"
-                  id="address"
+                  id="cccd"
+                  name="cccd"
                   className="form-input"
-                  placeholder="Nhập địa chỉ"
+                  placeholder="Số căn cước công dân, hộ chiếu"
                 />
               </div>
               <div className="form-group">
@@ -137,4 +155,6 @@ export function CustomerModal({ isOpen, onClose }) {
       </div>
     </div>
   );
-}
+};
+
+export default CustomerModal;

@@ -1,102 +1,140 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import "../../styles/modal/RoomModal.css";
+import { findAllRoomType } from "../../services/room-type";
 
-const RoomModal = ({ isOpen, onClose, onSave }) => {
-  const [roomData, setRoomData] = useState({
-    roomName: "",
-    area: "",
-    roomType: "",
-    startDate: new Date().toISOString().split("T")[0], // Ngày hiện tại
-    notes: "",
+const RoomModal = ({ isOpen, room, setRoom, onClose, onSave }) => {
+  const [roomTypes, setRoomTypes] = useState([]);
+
+  const [roomType, setRoomType] = useState({
+    roomTypeId: "",
+    roomTypeName: "",
+    priceByDay: 0,
+    priceByHour: 0,
+    priceOvernight: 0,
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setRoomData((prev) => ({ ...prev, [name]: value }));
+    setRoom((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectRoomType = (e) => {
+    handleInputChange(e);
+    setRoomType(() => {
+      const selectedRoomType = roomTypes.find(
+        (type) => type.roomTypeId === e.target.value
+      );
+      return {
+        roomTypeId: e.target.value,
+        roomTypeName: selectedRoomType?.roomTypeName || "",
+        priceByDay: selectedRoomType?.priceByDay || 0,
+        priceByHour: selectedRoomType?.priceByHour || 0,
+        priceOvernight: selectedRoomType?.priceOvernight || 0,
+      };
+    });
   };
 
   const handleSave = () => {
-    onSave(roomData); // Gọi hàm onSave với dữ liệu phòng
-    onClose(); // Đóng modal
+    onSave();
+    onClose();
   };
+
+  const handleClose = () => {
+    setRoom({ roomId: "", roomName: "", roomTypeId: "" });
+    onClose();
+  };
+
+  const fetchRoomTypes = async (search, status) => {
+    const roomTypes = await findAllRoomType(search, status);
+    if (roomTypes) {
+      setRoomTypes(roomTypes);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoomTypes();
+
+    if (room.roomType) {
+      const selectedRoomType = room.RoomType;
+
+      setRoomType(() => ({
+        roomTypeId: room.roomType.roomTypeId,
+        roomTypeName: room.roomType?.roomTypeName || "",
+        priceByDay: room.roomType?.priceByDay || 0,
+        priceByHour: room.roomType?.priceByHour || 0,
+        priceOvernight: room.roomType?.priceOvernight || 0,
+      }));
+    }
+
+    console.log("roomType", roomType);
+  }, []);
 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay room-modal">
       <div className="modal">
         <div className="modal-header">
-          <h3>Thêm phòng</h3>
-          <button className="close-button" onClick={onClose}>
+          <h3>phòng</h3>
+          <button className="close-button" onClick={handleClose}>
             ×
           </button>
         </div>
         <div className="modal-body">
-          <div className="form-group">
-            <label htmlFor="roomName" className="form-label required">
-              Tên phòng
-            </label>
-            <input
-              id="roomName"
-              name="roomName"
-              className="input-field"
-              type="text"
-              value={roomData.roomName}
-              onChange={handleInputChange}
-              placeholder="Nhập tên phòng"
-            />
-          </div>
+          <div className="form">
+            <div className="form-left">
+              <div className="form-group">
+                <label htmlFor="roomName" className="form-label required">
+                  Tên phòng
+                </label>
+                <input
+                  id="roomName"
+                  name="roomName"
+                  className="input-field"
+                  type="text"
+                  value={room.roomName}
+                  onChange={handleInputChange}
+                  placeholder="Nhập tên phòng"
+                />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="area" className="form-label">
-              Khu vực
-            </label>
-            <select
-              id="area"
-              name="area"
-              className="input-field"
-              value={roomData.area}
-              onChange={handleInputChange}
-            >
-              <option value="">--Lựa chọn--</option>
-              <option value="area1">Khu vực 1</option>
-              <option value="area2">Khu vực 2</option>
-              <option value="area3">Khu vực 3</option>
-            </select>
+              <div className="form-group">
+                <label htmlFor="roomType" className="form-label required">
+                  Hạng phòng
+                </label>
+                <select
+                  id="roomType"
+                  name="roomTypeId"
+                  className="input-field"
+                  value={room.roomTypeId}
+                  onChange={handleSelectRoomType}
+                >
+                  <option value="">
+                    {roomType.roomTypeName
+                      ? roomType.roomTypeName
+                      : "-- Chọn hạng phòng --"}
+                  </option>
+                  {roomTypes.map((type) => (
+                    <option key={type.roomTypeId} value={type.roomTypeId}>
+                      {type.roomTypeName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="form-right">
+              <p>Phòng sẽ được áp dụng theo giá của hạng phòng:</p>
+              <ul>
+                <li>Giá giờ: {roomType.priceByHour || "Chưa có thông tin"}</li>
+                <li>
+                  Giá cả ngày: {roomType.priceByDay || "Chưa có thông tin"}
+                </li>
+                <li>
+                  Giá qua đêm: {roomType.priceOvernight || "Chưa có thông tin"}
+                </li>
+              </ul>
+            </div>
           </div>
-
-          <div className="form-group">
-            <label htmlFor="roomType" className="form-label required">
-              Hạng phòng
-            </label>
-            <select
-              id="roomType"
-              name="roomType"
-              className="input-field"
-              value={roomData.roomType}
-              onChange={handleInputChange}
-            >
-              <option value="">--Lựa chọn--</option>
-              <option value="double">Phòng 01 giường đôi</option>
-              <option value="single">Phòng 01 giường đơn</option>
-              <option value="twin">Phòng 02 giường đơn</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="startDate" className="form-label">
-              Bắt đầu sử dụng
-            </label>
-            <input
-              id="startDate"
-              name="startDate"
-              className="input-field"
-              type="date"
-              value={roomData.startDate}
-              onChange={handleInputChange}
-            />
-          </div>
-
           <div className="form-group">
             <label htmlFor="notes" className="form-label">
               Ghi chú
@@ -105,14 +143,14 @@ const RoomModal = ({ isOpen, onClose, onSave }) => {
               id="notes"
               name="notes"
               className="input-field"
-              value={roomData.notes}
-              onChange={handleInputChange}
+              // value={roomData.notes}
+              // onChange={handleInputChange}
               placeholder="Nhập ghi chú"
             ></textarea>
           </div>
         </div>
         <div className="modal-footer">
-          <button className="cancel-button" onClick={onClose}>
+          <button className="cancel-button" onClick={handleClose}>
             Hủy
           </button>
           <button className="save-button" onClick={handleSave}>

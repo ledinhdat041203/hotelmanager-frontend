@@ -1,190 +1,56 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./../styles/BookingPage.css";
 import RoomSelectionModal from "../components/modal/RoomSelectionModal";
 import BookingModal from "../components/modal/BookingModal";
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
 import { vi } from "date-fns/locale";
 import ServiceModal from "../components/modal/ServiceModal";
-
-// import "./../styles/Header.css";
-
-const rooms = [
-  {
-    code: "P.201",
-    status: "clean",
-    type: "01 giường đôi cho 2 người",
-    state: "available",
-    price: { hourly: 180000, daily: 720000, overnight: 720000 },
-  },
-  {
-    code: "P.102",
-    status: "dirty",
-    type: "01 giường đôi cho 2 người",
-    state: "pending",
-    price: { hourly: 180000, daily: 720000, overnight: 720000 },
-  },
-  {
-    code: "P.103",
-    status: "clean",
-    type: "01 giường đôi cho 2 người",
-    state: "in-use",
-    price: { hourly: 180000, daily: 720000, overnight: 720000 },
-  },
-  {
-    code: "P.104",
-    status: "dirty",
-    state: "available",
-    type: "01 giường đôi cho 2 người",
-    price: { hourly: 180000, daily: 720000, overnight: 720000 },
-  },
-  {
-    code: "P.105",
-    status: "clean",
-    type: "01 giường đôi cho 2 người",
-    state: "in-use",
-    price: { hourly: 180000, daily: 720000, overnight: 720000 },
-  },
-  {
-    code: "P.106",
-    status: "dirty",
-    type: "01 giường đôi cho 2 người",
-    state: "pending",
-    price: { hourly: 180000, daily: 720000, overnight: 720000 },
-  },
-  {
-    code: "P.107",
-    status: "clean",
-    type: "01 giường đôi cho 2 người",
-    state: "available",
-    price: { hourly: 180000, daily: 720000, overnight: 720000 },
-  },
-  {
-    code: "P.108",
-    status: "dirty",
-    type: "01 giường đôi cho 2 người",
-    state: "pending",
-    price: { hourly: 180000, daily: 720000, overnight: 720000 },
-  },
-];
-
-const bookings = [
-  {
-    id: 1,
-    roomName: "P.201",
-    channel: "Khách đến trực tiếp",
-    customer: "Nguyễn Văn A",
-    checkIn: "2023-10-01T14:00",
-    checkOut: "2023-10-01T16:00",
-    totalPrice: 2000000,
-    deposit: 500000,
-    status: "pending",
-  },
-  {
-    id: 2,
-    roomName: "P.102",
-    channel: "Facebook",
-    customer: "Trần Thị B",
-    checkIn: "2023-10-02T10:00",
-    checkOut: "2023-10-02T12:00",
-    totalPrice: 1500000,
-    deposit: 300000,
-    status: "in-use",
-  },
-  {
-    id: 3,
-    roomName: "P.103",
-    channel: "Zalo",
-    customer: "Lê Văn C",
-    checkIn: "2023-10-03T08:00",
-    checkOut: "2023-10-03T10:00",
-    totalPrice: 1000000,
-    deposit: 200000,
-    status: "pending",
-  },
-  {
-    id: 4,
-    roomName: "P.104",
-    channel: "Đặt online",
-    customer: "Phạm Thị D",
-    checkIn: "2023-10-04T09:00",
-    checkOut: "2023-10-04T11:00",
-    totalPrice: 1800000,
-    deposit: 400000,
-    status: "pending",
-  },
-  {
-    id: 5,
-    roomName: "P.105",
-    channel: "Khách đến trực tiếp",
-    customer: "Nguyễn Văn E",
-    checkIn: "2023-10-05T13:00",
-    checkOut: "2023-10-05T15:00",
-    totalPrice: 2200000,
-    deposit: 600000,
-    status: "in-use",
-  },
-  {
-    id: 6,
-    roomName: "P.106",
-    channel: "Facebook",
-    customer: "Trần Thị F",
-    checkIn: "2023-10-06T14:00",
-    checkOut: "2023-10-06T16:00",
-    totalPrice: 1700000,
-    deposit: 350000,
-    status: "pending",
-  },
-  {
-    id: 7,
-    roomName: "P.107",
-    channel: "Zalo",
-    customer: "Lê Văn G",
-    checkIn: "2023-10-07T08:00",
-    checkOut: "2023-10-07T10:00",
-    totalPrice: 1200000,
-    deposit: 250000,
-    status: "pending",
-  },
-  {
-    id: 8,
-    roomName: "P.108",
-    channel: "Đặt online",
-    customer: "Phạm Thị H",
-    checkIn: "2023-10-08T09:00",
-    checkOut: "2023-10-08T11:00",
-    totalPrice: 1900000,
-    deposit: 450000,
-    status: "in-use",
-  },
-  {
-    id: 9,
-    roomName: "P.109",
-    channel: "Khách đến trực tiếp",
-    customer: "Nguyễn Văn I",
-    checkIn: "2023-10-09T13:00",
-    checkOut: "2023-10-09T15:00",
-    totalPrice: 2300000,
-    deposit: 700000,
-    status: "pending",
-  },
-  {
-    id: 10,
-    roomName: "P.110",
-    channel: "Facebook",
-    customer: "Trần Thị J",
-    checkIn: "2023-10-10T14:00",
-    checkOut: "2023-10-10T16:00",
-    totalPrice: 1600000,
-    deposit: 300000,
-    status: "in-use",
-  },
-];
+import { searchRoom } from "../services/room";
+import { debounce } from "lodash";
+import { findAllBooking } from "../services/booking";
 
 export default function Booking() {
   const [viewMode, setViewMode] = useState("card");
+  const [rooms, setRooms] = useState([]);
+  const [room, setRoom] = useState({
+    roomId: "",
+    roomName: "",
+    roomTypeId: "",
+  });
+  const [searchData, setSearchData] = useState("");
   const [isSelectRoomModalOpen, setIsSelectRoomModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [state, setState] = useState("");
+  const [bookingInfo, setBookingInfo] = useState({
+    roomType: null,
+    checkInDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+    checkOutDate: format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm"),
+    type: "Ngày",
+    totalPrice: 0,
+  });
+
+  const [bookingRoom, setBookingRoom] = useState(null);
+  const [bookings, setBookings] = useState([]);
+
+  const fetchRooms = async (search, status) => {
+    const rooms = await searchRoom(search, status, state);
+    if (rooms) {
+      setRooms(rooms);
+      console.log(rooms);
+    } else {
+      setRooms([]);
+    }
+  };
+
+  const fetchBookings = async () => {
+    const bookings = await findAllBooking();
+    if (bookings) {
+      setBookings(bookings);
+    } else {
+      setBookings([]);
+    }
+  };
 
   const handleOpenModal = () => {
     setIsSelectRoomModalOpen(true);
@@ -196,6 +62,7 @@ export default function Booking() {
 
   const handleCloseBookingModal = () => {
     setIsBookingModalOpen(false);
+    setRoom({ roomId: "", roomName: "", roomTypeId: "" });
   };
 
   const handleOpenServiceModal = () => {
@@ -204,6 +71,57 @@ export default function Booking() {
   const handleCloseServiceModal = () => {
     setIsServiceModalOpen(false);
   };
+
+  const handleChangeSearchData = (e) => {
+    const newValue = e.target.value;
+    setSearchData(e.target.value);
+    debouncedSearch(newValue, 1);
+  };
+
+  const debouncedSearch = useCallback(
+    debounce(async (searchValue, statusValue) => {
+      try {
+        const rooms = await searchRoom(searchValue, statusValue, state);
+        if (rooms) {
+          setRooms(rooms);
+        } else {
+          setRooms([]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm:", error);
+      }
+    }, 1000),
+    []
+  );
+
+  const handleClickCard = (room) => {
+    setRoom(room);
+    setIsBookingModalOpen(true);
+  };
+
+  useEffect(() => {
+    fetchRooms(searchData, 1);
+    fetchBookings();
+  }, []);
+
+  useEffect(() => {
+    fetchRooms(searchData, 1, state);
+  }, [state]);
+
+  useEffect(() => {
+    console.log("bookingRoom", bookingRoom);
+    if (bookingRoom?.roomId) {
+      console.log("rommmmmmmmmm");
+
+      setRooms((prev) =>
+        prev.map((item) =>
+          item.roomId === bookingRoom.roomId ? bookingRoom : item
+        )
+      );
+    }
+  }, [bookingRoom]);
+
+  useEffect(() => {}, [room]);
 
   return (
     // header
@@ -230,6 +148,7 @@ export default function Booking() {
             type="text"
             placeholder="Tìm kiếm mã phòng, loại phòng..."
             className="search-input"
+            onChange={(e) => handleChangeSearchData(e)}
           />
           <button className="add-button" onClick={handleOpenModal}>
             + Đặt phòng
@@ -239,14 +158,37 @@ export default function Booking() {
 
       {/* Tabs */}
       <div className="tabs">
-        <div className="tab">
+        <div
+          className="tab"
+          onClick={() => {
+            setState("Trống");
+          }}
+        >
           <span className="tab-icon available"></span> Đang trống
         </div>
-        <div className="tab">
+        <div
+          className="tab"
+          onClick={() => {
+            setState("Chưa nhận phòng");
+          }}
+        >
           <span className="tab-icon pending"></span> Chưa nhận phòng
         </div>
-        <div className="tab">
+        <div
+          className="tab"
+          onClick={() => {
+            setState("Đang sử dụng");
+          }}
+        >
           <span className="tab-icon in-use"></span> Đang sử dụng
+        </div>
+        <div
+          className="tab"
+          onClick={() => {
+            setState(null);
+          }}
+        >
+          <span className="tab-icon all"></span> Tất cả
         </div>
       </div>
 
@@ -254,12 +196,17 @@ export default function Booking() {
         isOpen={isSelectRoomModalOpen}
         onClose={handleCloseModal}
         onBooking={() => setIsBookingModalOpen(true)}
+        bookingInfo={bookingInfo}
+        setBookingInfo={setBookingInfo}
       />
 
       <BookingModal
         isOpen={isBookingModalOpen}
         onClose={handleCloseBookingModal}
         onOpenServiceModal={handleOpenServiceModal}
+        room={room}
+        bookingInfo={bookingInfo}
+        setBookingRoom={setBookingRoom}
       />
 
       <ServiceModal
@@ -271,41 +218,47 @@ export default function Booking() {
         <div className="grid">
           {rooms.map((room) => (
             <div
-              className={`card ${room.state}`}
-              key={room.code}
-              onClick={() => setIsBookingModalOpen(true)}
+              className={
+                room.state === "Trống"
+                  ? "card available"
+                  : room.state === "Đang sử dụng"
+                  ? "card in-use"
+                  : "card pending"
+              }
+              key={room.roomId}
+              onClick={() => handleClickCard(room)}
             >
               <div className="card-header">
                 <span
                   className={`card-badge ${
-                    room.status === "clean" ? "clean" : "dirty"
+                    room.clean === "Sạch" ? "clean" : "dirty"
                   }`}
                 >
                   <i
                     className={`status-icon ${
-                      room.status === "clean"
+                      room.clean === "Sạch"
                         ? "fa-solid fa-star"
                         : "fas fa-broom"
                     }`}
                   ></i>
-                  {room.status === "clean" ? " Sạch" : " Chưa dọn"}
+                  {room.clean}
                 </span>
-                <div className="card-title">{room.code}</div>
+                <div className="card-title">{room.roomName}</div>
               </div>
               <div className="card-content">
-                <div className="room-type">{room.type}</div>
+                <div className="room-type">{room.roomType.roomTypeName}</div>
                 <div className="room-prices">
                   <div className="price-item">
                     <i className="fas fa-clock"></i>{" "}
-                    {room.price.hourly.toLocaleString()} VND / giờ
+                    {room.roomType.priceByHour.toLocaleString()} VND / giờ
                   </div>
                   <div className="price-item">
                     <i className="fas fa-sun"></i>{" "}
-                    {room.price.daily.toLocaleString()} VND / ngày
+                    {room.roomType.priceByDay.toLocaleString()} VND / ngày
                   </div>
                   <div className="price-item">
                     <i className="fas fa-moon"></i>{" "}
-                    {room.price.overnight.toLocaleString()} VND / đêm
+                    {room.roomType.priceOvernight.toLocaleString()} VND / đêm
                   </div>
                 </div>
               </div>
@@ -329,34 +282,44 @@ export default function Booking() {
             {bookings.map((booking, index) => (
               <div className="table-row" key={booking.id}>
                 <span>{index + 1}. </span>
-                <span>{booking.roomName}</span>
+                <span>{booking.room.roomName}</span>
                 <span>{booking.channel}</span>
-                <span>{booking.customer}</span>
+
                 <span>
-                  {format(new Date(booking.checkIn), "dd/MM/yyyy, HH:mm", {
+                  {booking.customerName ? booking.customerName : "Khách lẻ"}
+                </span>
+                <span>
+                  {format(new Date(booking.checkInDate), "dd/MM/yyyy, HH:mm", {
                     locale: vi,
                   })}
                 </span>
                 <span>
-                  {format(new Date(booking.checkOut), "dd/MM/yyyy, HH:mm", {
+                  {format(new Date(booking.checkOutDate), "dd/MM/yyyy, HH:mm", {
                     locale: vi,
                   })}
                 </span>
-                <span>{booking.totalPrice.toLocaleString()}</span>
-                <span>{booking.deposit.toLocaleString()}</span>
+                <span>{booking.totalPrice.toLocaleString()} VNĐ</span>
+                <span>
+                  {booking.depositAmount
+                    ? booking.depositAmount.toLocaleString()
+                    : 0}{" "}
+                  VNĐ
+                </span>
                 <button
                   className="add-button"
                   style={{
                     padding: "8px",
                     backgroundColor:
-                      booking.status === "pending"
-                        ? "#39ac69"
-                        : booking.status === "in-use"
+                      booking.status === "Chưa nhận phòng"
+                        ? "#279656"
+                        : booking.status === "Đã nhận phòng"
                         ? "#3b82f6"
                         : "#6b7280",
                   }}
                 >
-                  {booking.status === "pending" ? "Nhận phòng" : "Trả phòng"}
+                  {booking.status === "Chưa nhận phòng"
+                    ? "Nhận phòng"
+                    : "Trả phòng"}
                 </button>
               </div>
             ))}

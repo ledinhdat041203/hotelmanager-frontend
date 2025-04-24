@@ -18,7 +18,7 @@ let refreshPromise = null;
 
 // Hàm gọi API refresh token
 const requestTokenAPI = async () => {
-  console.log("refresh token...");
+
   return axiosInstance.post("/auth/refresh");
 };
 

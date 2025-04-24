@@ -40,6 +40,17 @@ const updateRoomTypeAPI = async (
   }
 };
 
+const updateStatusRoomTypeAPI = async (roomTypeId, status) => {
+  try {
+    const res = await axiosInstance.put(`/room-type/${roomTypeId}`, {
+      status,
+    });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const searchRoomTypeAPI = async (searchData, status) => {
   try {
     const res = await axiosInstance.get("/room-type/search", {
@@ -54,4 +65,19 @@ const searchRoomTypeAPI = async (searchData, status) => {
   }
 };
 
-export { createRoomTypeAPI, searchRoomTypeAPI, updateRoomTypeAPI };
+const findAllAPI = async () => {
+  try {
+    const res = await axiosInstance.get("/room-type");
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  createRoomTypeAPI,
+  searchRoomTypeAPI,
+  updateRoomTypeAPI,
+  findAllAPI,
+  updateStatusRoomTypeAPI,
+};

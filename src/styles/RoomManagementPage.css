@@ -6,6 +6,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng mờ */
   padding-top: 72px;
   max-height: calc(100vh - 64px); /* Chiều cao tối đa */
+  overflow-y: auto; /* Cuộn dọc nếu nội dung vượt quá chiều cao */
 }
 
 /* Tiêu đề */
@@ -101,7 +102,7 @@
 
 /* Add Button */
 .add-button {
-  background-color: #10b94b;
+  background-color: #279656;
   color: #ffffff;
   border: none;
   border-radius: 4px;
@@ -213,4 +214,50 @@
 
 .delete-button i {
   color: #ef4444; /* Màu đỏ cho nút Delete */
+}
+
+.confirm-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Màu nền mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 400px;
+}
+
+.dialog-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cancel-button,
+.confirm-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.confirm-button {
+  background-color: #ef4444;
+  color: #fff;
 }

@@ -3,6 +3,7 @@
   flex-direction: column;
   padding-top: 64px;
   min-height: 100vh; /* Đảm bảo chiều cao tối thiểu */
+  padding: 64px 16px;
 }
 /* Header container */
 .header {
@@ -104,6 +105,10 @@
   background-color: #279656;
 }
 
+.tab-icon.all {
+  background-color: #1d77c1;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -183,7 +188,7 @@
 }
 
 .card-badge.clean {
-  background-color: rgba(58, 210, 61, 0.8);
+  background-color: #279656;
 }
 
 .card-badge.dirty {
@@ -193,7 +198,7 @@
 
 .card-content {
   font-size: 16px; /* Tăng kích thước font */
-  color: #000000c2; /* Màu chữ trung tính */
+  color: #272626; /* Màu chữ trung tính */
   line-height: 1.5; /* Tăng khoảng cách dòng */
 }
 
@@ -243,6 +248,7 @@
   margin-top: 8px;
   padding: 4px; /* Thêm khoảng cách bên trong */
   justify-content: flex-start;
+  gap: 4px;
 }
 
 /* Toggle button */
@@ -268,9 +274,9 @@
 }
 
 .toggle-button.active {
-  background-color: #10b981; /* Màu xanh lá khi được chọn */
+  background-color: #279656; /* Màu xanh lá khi được chọn */
   color: white;
-  border-color: #10b981;
+  border-color: #279656;
 }
 
 .toggle-button span {
