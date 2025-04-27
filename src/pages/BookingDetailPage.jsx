@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, Plus } from "lucide-react";
 import "../styles/BookingDetailPage.css";
 import backgroundImage from "../assets/images/bg.jpg";
+import { useParams } from "react-router-dom";
+import { findBookingById, updateBooking } from "../services/booking";
+import { calculateTime } from "../utils/caculate-time";
+import { findByRoomType, findRoomTypeByRoomId } from "../services/room";
+import { calculatePrice } from "../utils/caculate-price";
+import Drawer from "../components/modal/Drawer";
+import InvoiceDrawer from "../components/modal/InvoiceDrawer";
 
 const services = [
   {
@@ -228,22 +235,11 @@ const services = [
   },
 ];
 
-const booking = {
-  roomTypes: "Vip đơn",
-  roomName: "P101",
-  type: "day",
-  checkInDate: "2023-10-01T14:00",
-  checkOutDate: "2023-10-01T16:00",
-  totalPrice: 2000000,
-};
-
-const rooms = [
-  { id: 1, name: "P101" },
-  { id: 2, name: "P102" },
-  { id: 3, name: "P103" },
-  { id: 4, name: "P104" },
-  { id: 5, name: "P201" },
-  { id: 6, name: "P202" },
+const channels = [
+  { id: "direct", name: "Khách đến trực tiếp", icon: "fa-solid fa-store" },
+  { id: "facebook", name: "Facebook", icon: "fa-brands fa-facebook" },
+  { id: "zalo", name: "Zalo", icon: "fa-solid fa-comment-dots" },
+  { id: "online", name: "Đặt online", icon: "fa-solid fa-globe" },
 ];
 
 export default function BookingDetail() {
@@ -253,11 +249,50 @@ export default function BookingDetail() {
   const [currentPage, setCurrentPage] = useState(0);
   const [quantities, setQuantities] = useState({});
 
-  const [searchRoom, setSearchRoom] = useState(""); // Giá trị input phòng
-  const [filteredRooms, setFilteredRooms] = useState([]); // Danh sách phòng gợi ý
-  const [roomName, setRoomName] = useState(booking.roomName); // Giá trị phòng hiện tại
+  const [searchRoom, setSearchRoom] = useState("");
+  const [filteredRooms, setFilteredRooms] = useState([]);
 
-  const quantity = 1; // Lấy số lượng hiện tại
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const [booking, setBooking] = useState({
+    id: "",
+    customerName: "",
+    customerPhone: "",
+    cccd: "",
+    checkInDate: "",
+    checkOutDate: "",
+    type: "",
+    status: "",
+    unitPrice: 0,
+    totalPrice: 0,
+    depositAmount: 0,
+    channel: "",
+  });
+  const [room, setRoom] = useState({
+    roomId: "",
+    roomName: "",
+    status: 1,
+    clean: "",
+    state: "",
+  });
+
+  const [rooms, setRooms] = useState([]);
+
+  const [roomType, setRoomType] = useState({
+    roomTypeId: "",
+    roomTypeName: "",
+    priceByDay: 0,
+    priceByHour: 0,
+    priceOvernight: 0,
+    status: 1,
+  });
+
+  const [timeQuantity, setTimeQuantity] = useState("");
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  const quantity = 1;
+
+  const { id: bookingId } = useParams();
 
   const handleDelete = (id) => {
     setSelectedServices((prev) => prev.filter((service) => service.id !== id));
@@ -283,8 +318,9 @@ export default function BookingDetail() {
   };
 
   const handleSelectRoom = (room) => {
-    setRoomName(room.name); // Cập nhật tên phòng
-    setSearchRoom(room.name); // Điền tên phòng vào input
+    // setRoomName(room.name);
+    setRoom(room);
+    setSearchRoom(room.roomName); // Điền tên phòng vào input
     setFilteredRooms([]); // Ẩn danh sách gợi ý
   };
 
@@ -297,7 +333,7 @@ export default function BookingDetail() {
       setFilteredRooms([]);
     } else {
       const filtered = rooms.filter((room) =>
-        room.name.toLowerCase().includes(value.toLowerCase())
+        room.roomName.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredRooms(filtered);
     }
@@ -325,6 +361,91 @@ export default function BookingDetail() {
     );
   };
 
+  const fetchRoomType = async (roomId) => {
+    const roomType = await findRoomTypeByRoomId(roomId);
+    if (roomType) {
+      console.log("room type", roomType);
+      setRoomType(roomType);
+    }
+  };
+  const fetchBooking = async () => {
+    const { booking, room } = await findBookingById(bookingId);
+    if (booking && room) {
+      // console.log("----", booking);
+      fetchRoomType(room.roomId);
+      setRoom(room);
+      setBooking(booking);
+    }
+  };
+  const fetchRooms = async (roomTypeId) => {
+    const rooms = await findByRoomType(roomTypeId, 1);
+
+    if (rooms) {
+      setRooms(rooms);
+    } else {
+      setRooms([]);
+    }
+  };
+
+  const handleEditBooking = async () => {
+    const updatedBooking = await updateBooking({
+      ...booking,
+      roomId: room.roomId,
+      bookingId,
+    });
+  };
+
+  useEffect(() => {
+    fetchBooking();
+  }, []);
+
+  useEffect(() => {
+    setSearchRoom(room.roomName);
+  }, [room.roomName]);
+
+  useEffect(() => {
+    if (roomType.roomTypeId) {
+      const price =
+        booking.type == "Ngày"
+          ? roomType.priceByDay
+          : booking.type == "Đêm"
+          ? roomType.priceOvernight
+          : roomType.priceByHour;
+
+      console.log("check dame", booking.type, price, roomType);
+
+      const timeQuantity = calculateTime(
+        booking.checkInDate,
+        booking.checkOutDate
+      );
+      const totalPrice = calculatePrice({
+        checkInStr: booking.checkInDate,
+        checkOutStr: booking.checkOutDate,
+        type: booking.type,
+        price: price,
+      });
+      setTimeQuantity(timeQuantity);
+      setBooking((prev) => ({ ...prev, totalPrice, unitPrice: price }));
+    }
+  }, [booking.checkInDate, booking.checkOutDate, booking.type]);
+
+  useEffect(() => {
+    const timeQuantity = calculateTime(
+      booking.checkInDate,
+      booking.checkOutDate
+    );
+
+    setTimeQuantity(timeQuantity);
+  }, [booking.checkInDate, booking.checkOutDate]);
+
+  useEffect(() => {
+    if (roomType.roomTypeId) fetchRooms(roomType.roomTypeId);
+  }, [roomType.roomTypeId]);
+
+  useEffect(() => {
+    console.log("change", booking);
+  }, [booking]);
+
   return (
     <div className="booking-detail-page">
       <div className="booking-detail-container">
@@ -333,26 +454,80 @@ export default function BookingDetail() {
           {/* Customer */}
           <div className="customer-section">
             <h3 className="section-title">Khách hàng</h3>
-            <div className="input-group">
-              <input
-                type="text"
-                placeholder="Nhập mã, Tên, SĐT khách hàng"
-                className="input-field"
-              />
-              <button className="add-button">
-                <Plus size={18} />
-              </button>
-            </div>
+            {booking.customerName === "" ? (
+              <div className="search-customer">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="text"
+                  placeholder="Nhập tên, SĐT, mã CCCD khách hàng"
+                  className="search-customer-input"
+                  value={booking.customerName}
+                  onChange={(e) =>
+                    setBooking((prev) => ({
+                      ...prev,
+                      customerName: e.target.value,
+                    }))
+                  }
+                />
+                <button
+                //  onClick={handleOpenCustomerModal}
+                >
+                  <i class="fa-solid fa-circle-plus"></i>
+                </button>
+              </div>
+            ) : (
+              <div className="search-customer">
+                <i class="fa-regular fa-user"></i>
+                <span>{booking.customerName}</span>
+                <button
+                  onClick={() =>
+                    setBooking((prev) => ({ ...prev, customerName: "" }))
+                  }
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Sales Channel */}
           <div className="sales-channel">
             <h3 className="section-title">Kênh bán</h3>
-            <div className="dropdown">
-              <button className="dropdown-button">
-                <span>Khách đến trực tiếp</span>
-                <ChevronDown size={16} />
-              </button>
+            <div className="channel-dropdown">
+              <div
+                className="channel-selected"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <i
+                  className={
+                    channels.find((ch) => ch.name === booking.channel)?.icon
+                  }
+                ></i>
+                <span>
+                  {channels.find((ch) => ch.name === booking.channel)?.name}
+                </span>
+              </div>
+              {isDropdownOpen && (
+                <div className="channel-options">
+                  {channels.map((channel) => (
+                    <div
+                      key={channel.id}
+                      className="channel-option"
+                      onClick={() => {
+                        setBooking((prev) => ({
+                          ...prev,
+                          channel: channel.name,
+                        }));
+
+                        setIsDropdownOpen(false);
+                      }}
+                    >
+                      <i className={channel.icon}></i>
+                      <span>{channel.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -369,12 +544,12 @@ export default function BookingDetail() {
           <div className="sidebar">
             <h3>Sản phẩm/Dịch vụ</h3>
             <div className="room-details">
-              <div className="search-customer">
+              <div className="search-service" style={{ maxWidth: "400px" }}>
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input
                   type="text"
-                  placeholder="Nhập tên, SĐT, mã CCCD khách hàng"
-                  className="search-customer-input"
+                  placeholder="Tìm kiếm dịch vụ"
+                  className="search-service-input"
                 />
               </div>
 
@@ -434,13 +609,13 @@ export default function BookingDetail() {
             <div className="content">
               <div className="content-header">
                 <h2 className="content-title">
-                  P.203 - Phòng 01 giường đôi cho 2 người
+                  {room.roomName} - {roomType.roomTypeName}
                 </h2>
               </div>
 
               <div className="content-body">
                 <div className="room-details">
-                  <div className="table-header">
+                  <div className="table-header" style={{ maxHeight: "50px" }}>
                     <span>Phòng</span>
                     <span>Hình thức</span>
                     <span>Nhận phòng</span>
@@ -460,11 +635,11 @@ export default function BookingDetail() {
                           <div className="autocomplete-dropdown">
                             {filteredRooms.map((room) => (
                               <div
-                                key={room.id}
+                                key={room.roomId}
                                 className="autocomplete-item"
                                 onClick={() => handleSelectRoom(room)}
                               >
-                                {room.name}
+                                {room.roomName}
                               </div>
                             ))}
                           </div>
@@ -473,26 +648,42 @@ export default function BookingDetail() {
 
                       <select
                         className="input-select"
-                        defaultValue={booking.type} // Giá trị mặc định
+                        value={booking.type} // Giá trị mặc định
                         onChange={(e) => {
                           // Xử lý khi người dùng thay đổi lựa chọn
                           console.log("Selected type:", e.target.value);
+                          setBooking((prev) => ({
+                            ...prev,
+                            type: e.target.value,
+                          }));
                         }}
                       >
-                        <option value="day">Ngày</option>
-                        <option value="night">Đêm</option>
-                        <option value="hour">Giờ</option>
+                        <option value="Ngày">Ngày</option>
+                        <option value="Đêm">Đêm</option>
+                        <option value="Giờ">Giờ</option>
                       </select>
 
                       <input
                         type="datetime-local"
                         className="input-date"
-                        defaultValue={booking.checkInDate}
+                        value={booking.checkInDate}
+                        onChange={(e) =>
+                          setBooking((prev) => ({
+                            ...prev,
+                            checkInDate: e.target.value,
+                          }))
+                        }
                       />
                       <input
                         type="datetime-local"
                         className="input-date"
-                        defaultValue={booking.checkOutDate}
+                        value={booking.checkOutDate}
+                        onChange={(e) =>
+                          setBooking((prev) => ({
+                            ...prev,
+                            checkOutDate: e.target.value,
+                          }))
+                        }
                       />
                     </div>
                   </div>
@@ -507,9 +698,21 @@ export default function BookingDetail() {
                     <span>Thành tiền</span>
                   </div>
                   <div className="table-body">
+                    <div className="table-row" key={booking.id}>
+                      <span>1.</span>
+                      <span>{roomType.roomTypeName}</span>
+                      <div className="quantity-control">
+                        <span>{timeQuantity}</span>
+                      </div>
+                      <span>{booking.unitPrice.toLocaleString()} VNĐ</span>
+                      <span>
+                        {booking.totalPrice.toLocaleString("vi-VN")} VNĐ
+                      </span>
+                    </div>
+
                     {selectedServices.map((service, index) => (
                       <div className="table-row" key={service.id}>
-                        <span>{index + 1}</span>
+                        <span>{index + 2}.</span>
                         <span>{service.name}</span>
                         <div className="quantity-control">
                           <button
@@ -547,19 +750,37 @@ export default function BookingDetail() {
 
               <div className="content-footer">
                 <span>Tổng tiền</span>
-                <span>100000</span>
+                <span>{booking.totalPrice.toLocaleString()} VNĐ</span>
               </div>
             </div>
 
             <div className="content-detail-footer">
               <div className="footer-buttons">
-                <button className="add-button">Hủy</button>
-                <button className="add-button">Thanh toán</button>
+                <button className="add-button">Hủy Đơn</button>
+                <button className="edit-button" onClick={handleEditBooking}>
+                  Lưu
+                </button>
+                <button
+                  className="add-button"
+                  onClick={() => {
+                    setOpenDrawer(true);
+                  }}
+                >
+                  Thanh toán
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <InvoiceDrawer
+        isOpen={openDrawer}
+        onClose={() => {
+          setOpenDrawer(false);
+        }}
+        bookingId={bookingId}
+      />
     </div>
   );
 }

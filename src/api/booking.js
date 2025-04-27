@@ -36,6 +36,8 @@ const createBookingAPI = async ({
   }
 };
 
+// const updateBookingAPI = async ({})
+
 const findAllBookingAPI = async () => {
   try {
     const res = axiosInstance.get("/booking");
@@ -45,4 +47,49 @@ const findAllBookingAPI = async () => {
   }
 };
 
-export { createBookingAPI, findAllBookingAPI };
+const findBookedTimeSlotsAPI = async (roomId) => {
+  try {
+    const res = axiosInstance.get(`/booking/booked-time-slots/${roomId}`);
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findBookingByIdAPI = async (bookingId) => {
+  try {
+    const res = axiosInstance.get(`/booking/${bookingId}`);
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const searchBookingAPI = async ({ roomName, customerName, channel }) => {
+  try {
+    const res = axiosInstance.get("/booking/search", {
+      params: { roomName, customerName, channel },
+    });
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updateBookingAPI = async (data) => {
+  try {
+    const res = await axiosInstance.put(`/booking/${data.bookingId}`, data);
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export {
+  createBookingAPI,
+  findAllBookingAPI,
+  findBookedTimeSlotsAPI,
+  searchBookingAPI,
+  findBookingByIdAPI,
+  updateBookingAPI,
+};

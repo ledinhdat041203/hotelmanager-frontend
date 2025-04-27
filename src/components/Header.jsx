@@ -12,7 +12,7 @@ const Header = () => {
   const { user, logout } = useContext(UserContext);
 
   const handleLogout = () => {
-    logout(); // Gọi hàm logout từ UserContext
+    logout(); 
     navigate("/login");
   };
 

@@ -51,6 +51,31 @@
   margin-bottom: 4px;
 }
 
+.booking-detail-page .search-customer {
+  position: relative;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  align-items: center;
+  display: flex;
+}
+
+.booking-detail-page .search-customer > span {
+  font-size: 16px;
+  padding-left: 8px;
+  font-weight: 600;
+  color: #5ba6f8;
+  margin-right: 8px;
+}
+
+.booking-detail-page .search-customer > button {
+  border: none;
+  background-color: white;
+  color: #bbc5c2;
+  font-size: 18px;
+  margin-left: auto;
+}
+
 .input-group {
   display: flex;
   align-items: center;
@@ -83,6 +108,21 @@
   padding: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  min-width: 100px;
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  min-width: 100px;
 }
 
 .add-button:hover {
@@ -197,14 +237,16 @@
   display: flex;
   justify-content: end; /* Căn đều hai bên */
   align-items: center; /* Căn giữa theo chiều dọc */
-  padding: 16px; /* Khoảng cách bên trong */
+  /* padding: 16px;  */
+  padding-top: 16px;
   border-top: 1px solid #e5e7eb; /* Viền ngăn cách */
   background-color: #ffffff; /* Màu nền trắng */
   border-radius: 8px; /* Bo góc */
   font-size: 16px; /* Kích thước chữ */
   font-weight: 600; /* Chữ đậm */
   color: #374151; /* Màu chữ */
-  gap: 128px; /* Khoảng cách giữa các phần tử */
+  gap: 32px; /* Khoảng cách giữa các phần tử */
+  padding-right: 16px;
 }
 
 .content-footer span {
@@ -335,7 +377,37 @@
   margin-top: 8px;
 }
 
-.content-body .table-header {
+.room-details .table-header {
+  display: grid; /* Sử dụng grid để căn chỉnh các cột */
+  grid-template-columns: 2fr 2fr 3fr 3fr; /* Tỷ lệ cột: Loại phòng (2 phần), Giá (1 phần mỗi cột) */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: start;
+  background-color: white; /* Màu nền nhạt */
+  padding: 0px; /* Khoảng cách bên trong */
+  border-radius: 12px; /* Bo góc */
+  font-weight: bolder; /* Chữ đậm */
+  color: #374151; /* Màu chữ */
+}
+
+.room-details .table-row {
+  display: grid; /* Sử dụng grid để căn chỉnh các cột */
+  grid-template-columns: 2fr 2fr 3fr 3fr;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  background-color: #ffffff; /* Màu nền trắng */
+  padding: 0px; /* Khoảng cách bên trong */
+  border-radius: 8px; /* Bo góc */
+  border: 0px solid #e5e7eb; /* Viền nhạt */
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng mờ */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Hiệu ứng khi hover */
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.room-details .table-body {
+  overflow-y: unset;
+}
+
+.room-items .table-header {
   display: grid; /* Sử dụng grid để căn chỉnh các cột */
   grid-template-columns: 2fr 2fr 2fr 3fr 3fr; /* Tỷ lệ cột: Loại phòng (2 phần), Giá (1 phần mỗi cột) */
   align-items: center; /* Căn giữa theo chiều dọc */
@@ -347,7 +419,7 @@
   color: #374151; /* Màu chữ */
 }
 
-.content-body .table-row {
+.room-items .table-row {
   display: grid; /* Sử dụng grid để căn chỉnh các cột */
   grid-template-columns: 2fr 2fr 2fr 3fr 3fr;
   align-items: center; /* Căn giữa theo chiều dọc */
@@ -502,4 +574,59 @@
 
 .footer-buttons .add-button:first-child:hover {
   background-color: #df9138; /* Màu đỏ đậm khi hover */
+}
+
+.booking-detail-page .channel-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  transition: background-color 0.3s ease;
+  width: fit-content;
+  padding: 16px;
+  gap: 8px;
+}
+
+.booking-detail-page .channel-selected:hover {
+  background-color: #e5e7eb;
+}
+
+/* Dropdown menu */
+.booking-detail-page .channel-options {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 200px;
+  padding: 8px 0;
+}
+
+/* Dropdown option */
+.booking-detail-page .channel-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.booking-detail-page .channel-option:hover {
+  background-color: #f3f4f6;
+}
+
+.booking-detail-page .channel-option i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.booking-detail-page .channel-option span {
+  font-size: 14px;
+  color: #374151;
 }
