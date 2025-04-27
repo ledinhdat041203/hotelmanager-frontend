@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./../styles/BookingPage.css";
 import RoomSelectionModal from "../components/modal/RoomSelectionModal";
 import BookingModal from "../components/modal/BookingModal";
@@ -7,9 +7,22 @@ import { vi } from "date-fns/locale";
 import ServiceModal from "../components/modal/ServiceModal";
 import { searchRoom } from "../services/room";
 import { debounce } from "lodash";
-import { findAllBooking } from "../services/booking";
+import { searchBooking } from "../services/booking";
+import BookingStatus from "../type/booking-status-enum";
+import RoomState from "../type/room-state-enum";
+import { useNavigate } from "react-router-dom";
+
+const channels = [
+  { id: "all", name: "Tất cả", icon: "fa-solid fa-border-all" },
+  { id: "direct", name: "Khách đến trực tiếp", icon: "fa-solid fa-store" },
+  { id: "facebook", name: "Facebook", icon: "fa-brands fa-facebook" },
+  { id: "zalo", name: "Zalo", icon: "fa-solid fa-comment-dots" },
+  { id: "online", name: "Đặt online", icon: "fa-solid fa-globe" },
+];
 
 export default function Booking() {
+  const navigate = useNavigate();
+
   const [viewMode, setViewMode] = useState("card");
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState({
@@ -33,23 +46,27 @@ export default function Booking() {
   const [bookingRoom, setBookingRoom] = useState(null);
   const [bookings, setBookings] = useState([]);
 
+  const [filterRoomName, setFilterRoomName] = useState("");
+  const [filterCustomerName, setFilterCustomerName] = useState("");
+
+  const [selectedChannel, setSelectedChannel] = useState("Tất cả");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState(null);
+
   const fetchRooms = async (search, status) => {
     const rooms = await searchRoom(search, status, state);
     if (rooms) {
       setRooms(rooms);
-      console.log(rooms);
     } else {
       setRooms([]);
     }
   };
 
-  const fetchBookings = async () => {
-    const bookings = await findAllBooking();
-    if (bookings) {
-      setBookings(bookings);
-    } else {
-      setBookings([]);
-    }
+  const fetchBookings = async (filter) => {
+    console.log("ok");
+    const bookings = await searchBooking(filter);
+    console.log("ok", bookings);
+    setBookings(bookings);
   };
 
   const handleOpenModal = () => {
@@ -94,14 +111,26 @@ export default function Booking() {
     []
   );
 
+  const debouncedFetchBookings = useCallback(
+    debounce(async (filter) => {
+      await fetchBookings(filter);
+    }, 1000),
+    []
+  );
+
   const handleClickCard = (room) => {
     setRoom(room);
     setIsBookingModalOpen(true);
   };
 
   useEffect(() => {
-    fetchRooms(searchData, 1);
-    fetchBookings();
+    console.log("effect");
+    fetchBookings({
+      customerName: filterCustomerName,
+      roomName: filterRoomName,
+      channel: selectedChannel,
+    });
+    // fetchRooms(searchData, 1);
   }, []);
 
   useEffect(() => {
@@ -109,10 +138,7 @@ export default function Booking() {
   }, [state]);
 
   useEffect(() => {
-    console.log("bookingRoom", bookingRoom);
     if (bookingRoom?.roomId) {
-      console.log("rommmmmmmmmm");
-
       setRooms((prev) =>
         prev.map((item) =>
           item.roomId === bookingRoom.roomId ? bookingRoom : item
@@ -156,41 +182,110 @@ export default function Booking() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="tabs">
-        <div
-          className="tab"
-          onClick={() => {
-            setState("Trống");
-          }}
-        >
-          <span className="tab-icon available"></span> Đang trống
+      {viewMode === "table" ? (
+        <div className="filter-section">
+          <div className="channel-dropdown">
+            <div
+              className="channel-selected"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <i
+                className={
+                  channels.find((ch) => ch.name === selectedChannel)?.icon
+                }
+              ></i>
+              <span>
+                {channels.find((ch) => ch.name === selectedChannel)?.name}
+              </span>
+            </div>
+            {isDropdownOpen && (
+              <div className="channel-options">
+                {channels.map((channel) => (
+                  <div
+                    key={channel.id}
+                    className="channel-option"
+                    onClick={() => {
+                      setSelectedChannel(channel.name);
+                      fetchBookings({
+                        customerName: filterCustomerName,
+                        roomName: filterRoomName,
+                        channel: channel.name,
+                      });
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    <i className={channel.icon}></i>
+                    <span>{channel.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <input
+            type="text"
+            placeholder="Lọc theo tên phòng"
+            value={filterRoomName}
+            onChange={(e) => {
+              setFilterRoomName(e.target.value);
+              debouncedFetchBookings({
+                roomName: e.target.value,
+                customerName: filterCustomerName,
+                channel: selectedChannel,
+              });
+            }}
+            className="filter-input"
+          />
+          <input
+            type="text"
+            placeholder="Lọc theo tên khách"
+            value={filterCustomerName}
+            onChange={(e) => {
+              setFilterCustomerName(e.target.value);
+              debouncedFetchBookings({
+                roomName: filterRoomName,
+                customerName: e.target.value,
+                channel: selectedChannel,
+              });
+            }}
+            className="filter-input"
+          />
         </div>
-        <div
-          className="tab"
-          onClick={() => {
-            setState("Chưa nhận phòng");
-          }}
-        >
-          <span className="tab-icon pending"></span> Chưa nhận phòng
+      ) : (
+        <div className="tabs">
+          <div
+            className="tab"
+            onClick={() => {
+              setState(RoomState.AVAILABLE);
+            }}
+          >
+            <span className="tab-icon available"></span> {RoomState.AVAILABLE}
+          </div>
+          <div
+            className="tab"
+            onClick={() => {
+              setState(RoomState.PENDING);
+            }}
+          >
+            <span className="tab-icon pending"></span> {RoomState.PENDING}
+          </div>
+          <div
+            className="tab"
+            onClick={() => {
+              setState(RoomState.IN_USE);
+            }}
+          >
+            <span className="tab-icon in-use"></span> {RoomState.IN_USE}
+          </div>
+          <div
+            className="tab"
+            onClick={() => {
+              setState(null);
+            }}
+          >
+            <span className="tab-icon all"></span> Tất cả
+          </div>
         </div>
-        <div
-          className="tab"
-          onClick={() => {
-            setState("Đang sử dụng");
-          }}
-        >
-          <span className="tab-icon in-use"></span> Đang sử dụng
-        </div>
-        <div
-          className="tab"
-          onClick={() => {
-            setState(null);
-          }}
-        >
-          <span className="tab-icon all"></span> Tất cả
-        </div>
-      </div>
+      )}
 
       <RoomSelectionModal
         isOpen={isSelectRoomModalOpen}
@@ -219,9 +314,9 @@ export default function Booking() {
           {rooms.map((room) => (
             <div
               className={
-                room.state === "Trống"
+                room.state === RoomState.AVAILABLE
                   ? "card available"
-                  : room.state === "Đang sử dụng"
+                  : room.state === RoomState.IN_USE
                   ? "card in-use"
                   : "card pending"
               }
@@ -305,22 +400,60 @@ export default function Booking() {
                     : 0}{" "}
                   VNĐ
                 </span>
-                <button
-                  className="add-button"
-                  style={{
-                    padding: "8px",
-                    backgroundColor:
-                      booking.status === "Chưa nhận phòng"
-                        ? "#279656"
-                        : booking.status === "Đã nhận phòng"
-                        ? "#3b82f6"
-                        : "#6b7280",
-                  }}
-                >
-                  {booking.status === "Chưa nhận phòng"
-                    ? "Nhận phòng"
-                    : "Trả phòng"}
-                </button>
+                <div className="button-access-group">
+                  <button
+                    className="add-button"
+                    style={{
+                      padding: "8px",
+                      minWidth: "100px",
+                      backgroundColor:
+                        booking.status === BookingStatus.PENDING
+                          ? "#279656"
+                          : booking.status === BookingStatus.CHECKED_IN
+                          ? "#3b82f6"
+                          : "#6b7280",
+                    }}
+                  >
+                    {booking.status === BookingStatus.PENDING
+                      ? "Nhận phòng"
+                      : "Trả phòng"}
+                  </button>
+                  <div
+                    className="menu-wrapper"
+                    style={{ position: "relative", marginLeft: "auto" }}
+                  >
+                    <button
+                      className="icon-button"
+                      onClick={() =>
+                        setOpenMenuId(
+                          openMenuId === booking.id ? null : booking.id
+                        )
+                      }
+                    >
+                      <i className="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+
+                    {openMenuId === booking.id && (
+                      <ul className="dropdown-menu">
+                        <li
+                          onClick={() =>
+                            navigate(`/booking-detail/${booking.id}`)
+                          }
+                        >
+                          Chi tiết
+                        </li>
+                        <li
+                          onClick={() =>
+                            navigate(`/booking-detail/${booking.id}`)
+                          }
+                        >
+                          Sửa đặt phòng
+                        </li>
+                        <li>Hủy đặt phòng</li>
+                      </ul>
+                    )}
+                  </div>
+                </div>
               </div>
             ))}
           </div>

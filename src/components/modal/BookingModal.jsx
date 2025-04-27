@@ -4,7 +4,9 @@ import CustomerModal from "./CustomerModal";
 import { findByRoomType } from "../../services/room";
 import { addDays, format } from "date-fns";
 import { calculatePrice } from "../../utils/caculate-price";
-import { createBooking } from "../../services/booking";
+import { createBooking, findBookedTimeSlots } from "../../services/booking";
+import BookingStatus from "../../type/booking-status-enum";
+import RoomState from "../../type/room-state-enum";
 
 const channels = [
   { id: "direct", name: "Khách đến trực tiếp", icon: "fa-solid fa-store" },
@@ -30,7 +32,7 @@ const BookingModal = ({
   const [booking, setBooking] = useState({
     roomTypeId: "",
     roomId: "",
-    roomName: "",
+    roomName: "Khách lẻ",
     type: "Ngày",
     checkInDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
     checkOutDate: format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm"),
@@ -40,7 +42,8 @@ const BookingModal = ({
     channel: "Khách đến trực tiếp",
   });
   const [rooms, setRooms] = useState([]);
-
+  const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
+  const [typeBooking, setTypeBooking] = useState("");
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [searchRoom, setSearchRoom] = useState("");
   const [roomType, setRoomType] = useState({
@@ -51,6 +54,8 @@ const BookingModal = ({
     priceOvernight: 0,
     status: 1,
   });
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [error, setError] = useState("");
 
   const [customer, setCustomer] = useState({
     customerName: "",
@@ -75,9 +80,13 @@ const BookingModal = ({
     });
     if (newBooking) {
       const state =
-        status === "Đã nhận phòng" ? "Đang sử dụng" : "Chưa nhận phòng";
+        status === BookingStatus.CHECKED_IN
+          ? RoomState.IN_USE
+          : RoomState.PENDING;
       setBookingRoom({ ...newBooking.room, state: state });
+      onClose();
     }
+    setIsConfirmDialogOpen(false);
   };
 
   const handleRoomSearchChange = (e) => {
@@ -147,9 +156,13 @@ const BookingModal = ({
     }
   };
 
+  const fetchBookedTimeSlots = async (roomId) => {
+    const bookedTimeSlots = await findBookedTimeSlots(roomId);
+    setBookedTimeSlots(bookedTimeSlots);
+  };
+
   useEffect(() => {
     if (isOpen) {
-      console.log(room);
       if (room.roomId) {
         setRoomType(room?.roomType);
         setBooking((prev) => ({
@@ -166,6 +179,7 @@ const BookingModal = ({
           totalPrice,
         }));
         fetchRoomTypes(room?.roomType);
+        fetchBookedTimeSlots(room.roomId);
       } else {
         setRoomType(bookingInfo?.roomType);
         setBooking((prev) => ({
@@ -177,15 +191,12 @@ const BookingModal = ({
           type: bookingInfo.type,
           totalPrice: bookingInfo.totalPrice,
         }));
-        console.log("info", bookingInfo);
+
         fetchRoomTypes(bookingInfo?.roomType);
+        fetchBookedTimeSlots(bookingInfo?.roomId);
       }
     }
   }, [isOpen]);
-
-  useEffect(() => {
-    console.log("booking", booking);
-  }, [booking]);
 
   const previewPrice = (roomType) => {
     const price =
@@ -220,14 +231,41 @@ const BookingModal = ({
     setCustomer({ customerName: "", customerPhone: "", cccd: "" });
     setFilteredRooms([]);
     setSearchRoom("");
+    setError("");
     onClose();
   };
   useEffect(() => {
     const totalPrice = previewPrice(roomType);
-    console.log("ok", totalPrice);
 
-    setBooking((prev) => ({ ...prev, totalPrice }));
+    const price =
+      booking.type == "Ngày"
+        ? roomType.priceByDay
+        : booking.type == "Đêm"
+        ? roomType.priceOvernight
+        : roomType.priceByHour;
+
+    setBooking((prev) => ({ ...prev, totalPrice, unitPrice: price }));
   }, [booking.checkInDate, booking.checkOutDate, booking.type]);
+
+  useEffect(() => {
+    const isOverlappingCheckin = bookedTimeSlots.some(
+      (slot) =>
+        new Date(booking.checkInDate) < new Date(slot.checkOutDate) &&
+        new Date(booking.checkInDate) >= new Date(slot.checkInDate)
+    );
+
+    const isOverlappingCheckOut = bookedTimeSlots.some(
+      (slot) =>
+        new Date(booking.checkOutDate) > new Date(slot.checkInDate) &&
+        new Date(booking.checkOutDate) <= new Date(slot.checkOutDate)
+    );
+
+    if (isOverlappingCheckin || isOverlappingCheckOut) {
+      setError("Thời gian nhận phòng trùng với khung giờ đã đặt!");
+    } else {
+      setError("");
+    }
+  }, [booking.checkInDate, booking.checkOutDate]);
 
   if (!isOpen) return null;
 
@@ -325,6 +363,12 @@ const BookingModal = ({
               </div>
             )}
           </div>
+          {error && (
+            <div className="error">
+              <i className="fa-solid fa-circle-exclamation"></i>
+              <span>{error}</span>
+            </div>
+          )}
         </div>
 
         <div className="table-header">
@@ -386,7 +430,8 @@ const BookingModal = ({
             <input
               type="datetime-local"
               className="input-date"
-              defaultValue={booking.checkInDate}
+              value={booking.checkInDate}
+              min={format(new Date(), "yyyy-MM-dd'T'HH:mm")}
               onChange={(e) =>
                 setBooking((prev) => ({ ...prev, checkInDate: e.target.value }))
               }
@@ -394,7 +439,8 @@ const BookingModal = ({
             <input
               type="datetime-local"
               className="input-date"
-              defaultValue={booking.checkOutDate}
+              value={booking.checkOutDate}
+              min={booking.checkInDate}
               onChange={(e) =>
                 setBooking((prev) => ({
                   ...prev,
@@ -444,14 +490,20 @@ const BookingModal = ({
           <button
             className="add-button"
             style={{ padding: "8px 14px" }}
-            onClick={() => handleBooking("Đã nhận phòng")}
+            onClick={() => {
+              setTypeBooking("Đã nhận phòng");
+              setIsConfirmDialogOpen(true);
+            }}
           >
             Nhận phòng
           </button>
           <button
             className="add-button"
             style={{ padding: "16px", backgroundColor: "#ff8800" }}
-            onClick={() => handleBooking("Chưa nhận phòng")}
+            onClick={() => {
+              setTypeBooking(BookingStatus.PENDING);
+              setIsConfirmDialogOpen(true);
+            }}
           >
             Đặt trước
           </button>
@@ -463,6 +515,28 @@ const BookingModal = ({
         custommer={customer}
         setCustomer={setCustomer}
       />
+
+      {isConfirmDialogOpen && (
+        <div className="confirm-dialog">
+          <div className="dialog-content">
+            <p>Xác nhận đặt phòng </p>
+            <div className="dialog-actions">
+              <button
+                className="cancel-button"
+                onClick={() => setIsConfirmDialogOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                className="confirm-button"
+                onClick={() => handleBooking(typeBooking)}
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

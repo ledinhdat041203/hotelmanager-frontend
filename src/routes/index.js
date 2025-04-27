@@ -47,7 +47,7 @@ const AppRoutes = () => {
           {/* Mặc định chuyển hướng về /booking */}
           <Route index element={<Navigate to="booking" replace />} />
           <Route path="booking" element={<Booking />} />
-          <Route path="booking-detail" element={<BookingDetail />} />
+          <Route path="booking-detail/:id" element={<BookingDetail />} />
           <Route path="room-management" element={<RoomManagement />} />
           <Route path="home" element={<HomePage />} />
         </Route>

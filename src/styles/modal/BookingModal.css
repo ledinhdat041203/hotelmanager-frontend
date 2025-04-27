@@ -111,7 +111,7 @@
   display: flex;
   flex-wrap: wrap;
   margin: 24px 0px;
-  max-width: 50%;
+  max-width: 100%;
 }
 
 .booking-header-container button {
@@ -549,4 +549,49 @@
 .button-group > div:hover {
   border: 1px solid #3b82f6;
   background-color: #e0f2fe;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: right;
+  gap: 8px; /* Khoảng cách giữa icon và text */
+  color: #dc2626; /* Màu đỏ cho lỗi */
+  font-size: 14px; /* Kích thước chữ */
+
+  background-color: #fee2e2; /* Nền đỏ nhạt */
+  padding: 8px 12px; /* Khoảng cách bên trong */
+  border: 1px solid #fca5a5; /* Viền đỏ nhạt */
+  border-radius: 4px; /* Bo góc */
+  margin-left: auto;
+}
+
+.error i {
+  font-size: 16px; /* Kích thước icon */
+  color: #dc2626; /* Màu đỏ cho icon */
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  list-style: none;
+  padding: 8px 0;
+  margin: 4px 0 0 0;
+  z-index: 999;
+  width: 140px;
+  border-radius: 4px;
+}
+
+.dropdown-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f0f0f0;
 }

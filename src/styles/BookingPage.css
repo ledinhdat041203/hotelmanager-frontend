@@ -58,14 +58,14 @@
 }
 
 /* Tabs container */
-.tabs {
+.booking-page .tabs {
   display: flex;
   gap: 16px;
   margin-bottom: 24px;
 }
 
 /* Tab item */
-.tab {
+.booking-page .tab {
   display: flex;
   align-items: center;
   gap: 8px; /* Khoảng cách giữa chấm tròn và text */
@@ -335,11 +335,13 @@
 }
 
 /* Table body */
-.table .table-body {
+.booking-page .table .table-body {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-top: 8px;
+  max-height: 55vh;
+  min-height: 55vh;
 }
 
 /* Table row */
@@ -361,4 +363,108 @@
   background-color: #f9fafb; /* Màu nền khi hover */
   box-shadow: 0 4px 8px rgba(4, 237, 78, 0.15); /* Bóng mờ đậm hơn khi hover */
   transform: translateY(-1px); /* Hiệu ứng nổi lên khi hover */
+}
+
+.filter-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 200px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.filter-input:focus {
+  border-color: #39ac69;
+}
+
+/* Dropdown container */
+.booking-page .channel-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 16px; /* Khoảng cách giữa các kênh */
+}
+
+/* Hiển thị icon của kênh đã chọn */
+.booking-page .channel-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  transition: background-color 0.3s ease;
+  width: fit-content;
+  padding: 16px;
+  gap: 8px;
+}
+
+.booking-page .channel-selected:hover {
+  background-color: #e5e7eb;
+}
+
+/* Dropdown menu */
+.booking-page .channel-options {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 200px;
+  padding: 8px 0;
+}
+
+/* Dropdown option */
+.booking-page .channel-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.booking-page .channel-option:hover {
+  background-color: #f3f4f6;
+}
+
+.booking-page .channel-option i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.booking-page .channel-option span {
+  font-size: 14px;
+  color: #374151;
+}
+
+.booking-page .button-access-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.booking-page .icon-button {
+  margin-left: auto;
+  background: white;
+  border: none;
+  cursor: pointer;
+}
+
+.booking-page .dropdown-menu {
+  top: 100%;
+  right: 100%;
 }

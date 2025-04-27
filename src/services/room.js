@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import {
   createRoomAPI,
   findByRoomTypeAPI,
+  findRoomTypeByRoomIdAPI,
   searchRoomAPI,
   updateRoomAPI,
   updateStatusRoomAPI,
@@ -95,6 +96,7 @@ const searchRoom = async (searchData, status, state) => {
 
 const findByRoomType = async (roomTypeId, status = 1) => {
   try {
+    // console.log("service::", roomTypeId);
     const res = await findByRoomTypeAPI(roomTypeId, status);
     const resData = res.data;
     if (resData.statusCode === 200) {
@@ -104,11 +106,32 @@ const findByRoomType = async (roomTypeId, status = 1) => {
       throw new Error(resData.message || "Tìm kiếm phòng thất bại");
     }
   } catch (error) {
+    return [];
+  }
+};
+
+const findRoomTypeByRoomId = async (roomId) => {
+  try {
+    const res = await findRoomTypeByRoomIdAPI(roomId);
+    const resData = res.data;
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      return data;
+    } else {
+      throw new Error(resData.message || "Tìm kiếm loại phòng thất bại");
+    }
+  } catch (error) {
     toast.error(
-      error.response?.data?.message ||
-        "Tìm kiếm phòng thất bại. Vui lòng kiểm tra lại thông tin."
+      error.response?.data?.message || "Tìm kiếm loại phòng thất bại. "
     );
   }
 };
 
-export { searchRoom, createRoom, updateRoom, updateStatusRoom, findByRoomType };
+export {
+  searchRoom,
+  createRoom,
+  updateRoom,
+  updateStatusRoom,
+  findByRoomType,
+  findRoomTypeByRoomId,
+};
