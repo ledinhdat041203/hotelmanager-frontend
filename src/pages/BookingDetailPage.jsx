@@ -9,6 +9,7 @@ import { findByRoomType, findRoomTypeByRoomId } from "../services/room";
 import { calculatePrice } from "../utils/caculate-price";
 import Drawer from "../components/modal/Drawer";
 import InvoiceDrawer from "../components/modal/InvoiceDrawer";
+import CustomerModal from "../components/modal/CustomerModal";
 
 const services = [
   {
@@ -289,6 +290,7 @@ export default function BookingDetail() {
 
   const [timeQuantity, setTimeQuantity] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [openCustomerModal, setOpenCustomerModal] = useState(false);
 
   const quantity = 1;
 
@@ -469,9 +471,7 @@ export default function BookingDetail() {
                     }))
                   }
                 />
-                <button
-                //  onClick={handleOpenCustomerModal}
-                >
+                <button onClick={() => setOpenCustomerModal(true)}>
                   <i class="fa-solid fa-circle-plus"></i>
                 </button>
               </div>
@@ -780,6 +780,17 @@ export default function BookingDetail() {
           setOpenDrawer(false);
         }}
         bookingId={bookingId}
+      />
+
+      <CustomerModal
+        isOpen={openCustomerModal}
+        onClose={() => setOpenCustomerModal(false)}
+        custommer={{
+          customerName: booking.customerName,
+          customerPhone: booking.customerPhone,
+          cccd: booking.cccd,
+        }}
+        setCustomer={setBooking}
       />
     </div>
   );

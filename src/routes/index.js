@@ -49,6 +49,9 @@ const AppRoutes = () => {
           <Route path="booking" element={<Booking />} />
           <Route path="booking-detail/:id" element={<BookingDetail />} />
           <Route path="room-management" element={<RoomManagement />} />
+          <Route path="service-management" element={<RoomManagement />} />
+          <Route path="overview" element={<RoomManagement />} />
+          <Route path="report" element={<RoomManagement />} />
           <Route path="home" element={<HomePage />} />
         </Route>
       </Routes>

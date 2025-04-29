@@ -74,15 +74,14 @@ const RoomManagement = () => {
     if (!isEdit) {
       const newRoom = await createRoom(room.roomName, room.roomTypeId);
       if (newRoom) {
-        setRoomData((prev) => [...prev, newRoom]);
+        setRoomData((prev) => [newRoom, ...prev]);
       }
     } else {
       console.log("update room");
-      const updatedRoom = await updateRoom(
-        room.roomId,
-        room.roomName,
-        room.roomTypeId
-      );
+      const updatedRoom = await updateRoom(room.roomId, {
+        roomName: room.roomName,
+        roomTypeId: room.roomTypeId,
+      });
 
       if (updatedRoom) {
         setRoomData((prev) =>
@@ -106,7 +105,7 @@ const RoomManagement = () => {
       );
 
       if (newRoomType) {
-        setRoomTypeData((prev) => [...prev, newRoomType]);
+        setRoomTypeData((prev) => [newRoomType, ...prev]);
       }
     } else {
       console.log("update");

@@ -65,10 +65,15 @@ const findBookingByIdAPI = async (bookingId) => {
   }
 };
 
-const searchBookingAPI = async ({ roomName, customerName, channel }) => {
+const searchBookingAPI = async ({
+  roomName,
+  customerName,
+  channel,
+  status,
+}) => {
   try {
     const res = axiosInstance.get("/booking/search", {
-      params: { roomName, customerName, channel },
+      params: { roomName, customerName, channel, status },
     });
     return res;
   } catch (err) {
@@ -85,6 +90,26 @@ const updateBookingAPI = async (data) => {
   }
 };
 
+const payBookingAPI = async (bookingId, customerPaid) => {
+  try {
+    const res = await axiosInstance.post(`/booking/${bookingId}/pay`, {
+      customerPaid,
+    });
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const checkinBookingAPI = async (bookingId) => {
+  try {
+    const res = await axiosInstance.post(`/booking/${bookingId}/checkin`);
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export {
   createBookingAPI,
   findAllBookingAPI,
@@ -92,4 +117,6 @@ export {
   searchBookingAPI,
   findBookingByIdAPI,
   updateBookingAPI,
+  payBookingAPI,
+  checkinBookingAPI,
 };

@@ -1,16 +1,23 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "./../styles/BookingPage.css";
 import RoomSelectionModal from "../components/modal/RoomSelectionModal";
 import BookingModal from "../components/modal/BookingModal";
 import { addDays, format } from "date-fns";
 import { vi } from "date-fns/locale";
 import ServiceModal from "../components/modal/ServiceModal";
-import { searchRoom } from "../services/room";
+import { searchRoom, updateRoom } from "../services/room";
 import { debounce } from "lodash";
-import { searchBooking } from "../services/booking";
+import { checkinBooking, searchBooking } from "../services/booking";
 import BookingStatus from "../type/booking-status-enum";
 import RoomState from "../type/room-state-enum";
 import { useNavigate } from "react-router-dom";
+import InvoiceDrawer from "../components/modal/InvoiceDrawer";
 
 const channels = [
   { id: "all", name: "Tất cả", icon: "fa-solid fa-border-all" },
@@ -52,6 +59,12 @@ export default function Booking() {
   const [selectedChannel, setSelectedChannel] = useState("Tất cả");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [openRoomId, setOpenRoomId] = useState(null);
+
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const bookingId = useRef("");
+  const [confirmCheckInDialogOpen, setConfirmCheckInDialogOpen] =
+    useState(false);
 
   const fetchRooms = async (search, status) => {
     const rooms = await searchRoom(search, status, state);
@@ -69,6 +82,21 @@ export default function Booking() {
     setBookings(bookings);
   };
 
+  const updateCleanRoom = async (roomId, clean) => {
+    const updatedRoom = await updateRoom(roomId, { clean });
+    if (updatedRoom) {
+      setRooms((prev) =>
+        prev.map((item) =>
+          item.roomId === updatedRoom.roomId ? updatedRoom : item
+        )
+      );
+    }
+  };
+
+  const handleCleanRoom = async (roomId, clean) => {
+    await updateCleanRoom(roomId, clean);
+    setOpenRoomId(null);
+  };
   const handleOpenModal = () => {
     setIsSelectRoomModalOpen(true);
   };
@@ -93,6 +121,19 @@ export default function Booking() {
     const newValue = e.target.value;
     setSearchData(e.target.value);
     debouncedSearch(newValue, 1);
+  };
+
+  const handleCheckin = async () => {
+    const updatedBooking = await checkinBooking(bookingId.current);
+    if (updatedBooking) {
+      setBookings((prev) =>
+        prev.map((item) =>
+          checkinBooking.id === item.id ? updatedBooking : item
+        )
+      );
+
+      setConfirmCheckInDialogOpen(false);
+    }
   };
 
   const debouncedSearch = useCallback(
@@ -123,15 +164,41 @@ export default function Booking() {
     setIsBookingModalOpen(true);
   };
 
+  const handlePayButtonClick = (booking) => {
+    bookingId.current = booking.id;
+    console.log("bookingId", booking.id);
+    if (booking.status === BookingStatus.CHECKED_IN) {
+      console.log("current", bookingId.current);
+
+      setOpenDrawer(true);
+    } else {
+      setConfirmCheckInDialogOpen(true);
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log("effect");
+  //   fetchBookings({
+  //     customerName: filterCustomerName,
+  //     roomName: filterRoomName,
+  //     channel: selectedChannel,
+  //     status: [BookingStatus.PENDING, BookingStatus.CHECKED_IN],
+  //   });
+  //   // fetchRooms(searchData, 1);
+  // }, []);
+
   useEffect(() => {
-    console.log("effect");
-    fetchBookings({
-      customerName: filterCustomerName,
-      roomName: filterRoomName,
-      channel: selectedChannel,
-    });
-    // fetchRooms(searchData, 1);
-  }, []);
+    if (!isBookingModalOpen && !openDrawer) {
+      console.log("effect");
+      fetchBookings({
+        customerName: filterCustomerName,
+        roomName: filterRoomName,
+        channel: selectedChannel,
+        status: [BookingStatus.PENDING, BookingStatus.CHECKED_IN],
+      });
+      fetchRooms(searchData, 1);
+    }
+  }, [isBookingModalOpen, openDrawer]);
 
   useEffect(() => {
     fetchRooms(searchData, 1, state);
@@ -309,6 +376,14 @@ export default function Booking() {
         onClose={handleCloseServiceModal}
       />
 
+      <InvoiceDrawer
+        isOpen={openDrawer}
+        onClose={() => {
+          setOpenDrawer(false);
+        }}
+        bookingId={bookingId.current}
+      />
+
       {viewMode === "card" ? (
         <div className="grid">
           {rooms.map((room) => (
@@ -338,9 +413,40 @@ export default function Booking() {
                   ></i>
                   {room.clean}
                 </span>
-                <div className="card-title">{room.roomName}</div>
+                <button
+                  className="icon-button"
+                  style={{ fontSize: "24px", backgroundColor: "transparent" }}
+                  onClick={(e) => {
+                    e.stopPropagation(); // ngăn click lan ra card
+                    setOpenRoomId(
+                      openRoomId === room.roomId ? null : room.roomId
+                    );
+                  }}
+                >
+                  <i className="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+
+                {openRoomId === room.roomId && (
+                  <ul
+                    className="dropdown-menu"
+                    style={{ right: "0%", top: "100%" }}
+                  >
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCleanRoom(
+                          room.roomId,
+                          room.clean === "Sạch" ? "Chưa dọn" : "Sạch"
+                        );
+                      }}
+                    >
+                      {room.clean === "Sạch" ? "Chưa dọn" : "làm sạch"}
+                    </li>
+                  </ul>
+                )}
               </div>
               <div className="card-content">
+                <div className="card-title">{room.roomName}</div>
                 <div className="room-type">{room.roomType.roomTypeName}</div>
                 <div className="room-prices">
                   <div className="price-item">
@@ -408,15 +514,16 @@ export default function Booking() {
                       minWidth: "100px",
                       backgroundColor:
                         booking.status === BookingStatus.PENDING
-                          ? "#279656"
-                          : booking.status === BookingStatus.CHECKED_IN
                           ? "#3b82f6"
+                          : booking.status === BookingStatus.CHECKED_IN
+                          ? "#279656"
                           : "#6b7280",
                     }}
+                    onClick={() => handlePayButtonClick(booking)}
                   >
                     {booking.status === BookingStatus.PENDING
                       ? "Nhận phòng"
-                      : "Trả phòng"}
+                      : "Thanh toán"}
                   </button>
                   <div
                     className="menu-wrapper"
@@ -456,6 +563,28 @@ export default function Booking() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {confirmCheckInDialogOpen && (
+        <div className="confirm-dialog">
+          <div className="dialog-content">
+            <p>Xác nhận Khách nhận phòng </p>
+            <div className="dialog-actions">
+              <button
+                className="cancel-button"
+                onClick={() => setConfirmCheckInDialogOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                className="confirm-button"
+                onClick={() => handleCheckin()}
+              >
+                Xác nhận
+              </button>
+            </div>
           </div>
         </div>
       )}

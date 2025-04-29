@@ -12,12 +12,9 @@ const createRoomAPI = async (roomName, roomTypeId) => {
   }
 };
 
-const updateRoomAPI = async (roomId, roomName, roomTypeId) => {
+const updateRoomAPI = async (roomId, updateData) => {
   try {
-    const res = await axiosInstance.put(`/room/${roomId}`, {
-      roomName,
-      roomTypeId,
-    });
+    const res = await axiosInstance.put(`/room/${roomId}`, updateData);
     return res;
   } catch (error) {
     throw error;
