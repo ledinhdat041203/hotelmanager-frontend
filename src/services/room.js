@@ -27,9 +27,9 @@ const createRoom = async (roomName, roomTypeId) => {
   }
 };
 
-const updateRoom = async (roomId, roomName, roomTypeId) => {
+const updateRoom = async (roomId, updateData) => {
   try {
-    const res = await updateRoomAPI(roomId, roomName, roomTypeId);
+    const res = await updateRoomAPI(roomId, updateData);
     const resData = res.data;
     if (resData.statusCode === 200) {
       const data = resData.data;

@@ -1,9 +1,11 @@
 import { toast } from "react-toastify";
 import {
+  checkinBookingAPI,
   createBookingAPI,
   findAllBookingAPI,
   findBookedTimeSlotsAPI,
   findBookingByIdAPI,
+  payBookingAPI,
   searchBookingAPI,
   updateBookingAPI,
 } from "../api/booking";
@@ -99,7 +101,7 @@ const findBookingById = async (bookingId) => {
 
     if (resData.statusCode === 200) {
       const { room, ...booking } = resData.data;
-      const { checkInDate, checkOutDate } = booking;
+      const { checkInDate, checkOutDate, createdAt } = booking;
 
       const checkInVNDate = toZonedTime(checkInDate, timeZone);
       booking.checkInDate = format(checkInVNDate, "yyyy-MM-dd HH:mm", {
@@ -108,6 +110,11 @@ const findBookingById = async (bookingId) => {
 
       const checkOutVNDate = toZonedTime(checkOutDate, timeZone);
       booking.checkOutDate = format(checkOutVNDate, "yyyy-MM-dd HH:mm", {
+        timeZone,
+      });
+
+      const createAtVNDate = toZonedTime(createdAt, timeZone);
+      booking.createdAt = format(createAtVNDate, "yyyy/MM/dd HH:mm", {
         timeZone,
       });
 
@@ -126,6 +133,7 @@ const searchBooking = async ({
   roomName = "",
   customerName = "",
   channel = "",
+  status = [],
 }) => {
   try {
     const customChannel = channel === "Tất cả" ? null : channel;
@@ -134,6 +142,7 @@ const searchBooking = async ({
       roomName,
       customerName,
       channel: customChannel,
+      status,
     });
     const resData = res.data;
 
@@ -174,6 +183,44 @@ const updateBooking = async (data) => {
   }
 };
 
+const payBooking = async (bookingId, customerPaid) => {
+  try {
+    const res = await payBookingAPI(bookingId, customerPaid);
+
+    const resData = res.data;
+    // console.log("resdata", resData);
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      // console.log("201");
+      toast.success(resData.message);
+      return data;
+    } else {
+      throw new Error(resData.message || "Lỗi thanh toán");
+    }
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Lỗi thanh toán");
+  }
+};
+
+const checkinBooking = async (bookingId) => {
+  try {
+    const res = await checkinBookingAPI(bookingId);
+
+    const resData = res.data;
+    // console.log("resdata", resData);
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      // console.log("201");
+      toast.success(resData.message);
+      return data;
+    } else {
+      throw new Error(resData.message || "Lỗi Nhận phòng ");
+    }
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Lỗi Nhận phòng ");
+  }
+};
+
 export {
   createBooking,
   findAllBooking,
@@ -181,4 +228,6 @@ export {
   searchBooking,
   findBookingById,
   updateBooking,
+  payBooking,
+  checkinBooking,
 };

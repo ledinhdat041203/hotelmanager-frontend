@@ -34,8 +34,8 @@ const BookingModal = ({
     roomId: "",
     roomName: "Khách lẻ",
     type: "Ngày",
-    checkInDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-    checkOutDate: format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm"),
+    checkInDate: "",
+    checkOutDate: "",
     unitPrice: 0,
     totalPrice: 0,
     depositAmount: 0,
@@ -222,8 +222,8 @@ const BookingModal = ({
       roomId: "",
       roomName: "",
       type: "Ngày",
-      checkInDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      checkOutDate: format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm"),
+      checkInDate: "",
+      checkOutDate: "",
       unitPrice: 0,
       totalPrice: 0,
       depositAmount: 0,
@@ -248,6 +248,7 @@ const BookingModal = ({
   }, [booking.checkInDate, booking.checkOutDate, booking.type]);
 
   useEffect(() => {
+    console.log("check time");
     const isOverlappingCheckin = bookedTimeSlots.some(
       (slot) =>
         new Date(booking.checkInDate) < new Date(slot.checkOutDate) &&
@@ -494,7 +495,8 @@ const BookingModal = ({
               setTypeBooking("Đã nhận phòng");
               setIsConfirmDialogOpen(true);
             }}
-          >
+            disabled={error ? true : false}
+            >
             Nhận phòng
           </button>
           <button
@@ -504,6 +506,7 @@ const BookingModal = ({
               setTypeBooking(BookingStatus.PENDING);
               setIsConfirmDialogOpen(true);
             }}
+            disabled={error ? true : false}
           >
             Đặt trước
           </button>

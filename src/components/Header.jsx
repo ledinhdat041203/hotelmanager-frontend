@@ -10,9 +10,10 @@ const Header = () => {
   const [isManager, setIsManager] = useState(false); // State để quản lý trạng thái của nút "Quản lý"
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State để quản lý menu
   const { user, logout } = useContext(UserContext);
+  const [tabActive, setTabActive] = useState("overview");
 
   const handleLogout = () => {
-    logout(); 
+    logout();
     navigate("/login");
   };
 
@@ -25,14 +26,24 @@ const Header = () => {
 
   // Theo dõi thay đổi isManager để navigate
   useEffect(() => {
+    if (!isManager) {
+      navigate("/booking");
+    } else if (isManager && user.role === 1) {
+      navigate(`/${tabActive}`);
+    }
+  }, [isManager, tabActive]);
+
+  useEffect(() => {
     if (user.role === 1) {
       if (isManager) {
-        navigate("/room-management");
+        navigate(`/${tabActive}`);
       } else {
         navigate("/booking");
       }
+    } else {
+      navigate("/booking");
     }
-  }, [isManager]);
+  }, [isManager, tabActive]);
 
   return (
     <div className="header-container">
@@ -42,10 +53,35 @@ const Header = () => {
       </div>
       {isManager && (
         <div className="tabs">
-          <button className="tab-item">Tổng quan</button>
-          <button className="tab-item">Phòng</button>
-          <button className="tab-item">Hàng hóa</button>
-          <button className="tab-item">Báo cáo</button>
+          <button
+            className={`tab-item ${tabActive === "overview" ? "active" : ""}`}
+            onClick={() => setTabActive("overview")}
+          >
+            Tổng quan
+          </button>
+
+          <button
+            className={`tab-item ${
+              tabActive === "room-management" ? "active" : ""
+            }`}
+            onClick={() => setTabActive("room-management")}
+          >
+            Phòng
+          </button>
+          <button
+            className={`tab-item ${
+              tabActive === "service-management" ? "active" : ""
+            }`}
+            onClick={() => setTabActive("service-management")}
+          >
+            Dịch vụ
+          </button>
+          <button
+            className={`tab-item ${tabActive === "report" ? "active" : ""}`}
+            onClick={() => setTabActive("report")}
+          >
+            Báo cáo
+          </button>
         </div>
       )}
 
