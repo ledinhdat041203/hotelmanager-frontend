@@ -51,7 +51,7 @@ const Header = () => {
         <img src={logo} alt="Logo" className="logo-image" />
         <span> SOLARIA</span>
       </div>
-      {isManager && (
+      {isManager ? (
         <div className="tabs">
           <button
             className={`tab-item ${tabActive === "overview" ? "active" : ""}`}
@@ -81,6 +81,16 @@ const Header = () => {
             onClick={() => setTabActive("report")}
           >
             Báo cáo
+          </button>
+        </div>
+      ) : (
+        <div className="tabs">
+          <button className={`tab-item `} onClick={() => navigate("/booking")}>
+            <i
+              className="fa-solid fa-house"
+              style={{ marginRight: "12px" }}
+            ></i>
+            Đặt phòng
           </button>
         </div>
       )}

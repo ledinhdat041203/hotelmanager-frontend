@@ -13,7 +13,11 @@ import { vi } from "date-fns/locale";
 import ServiceModal from "../components/modal/ServiceModal";
 import { searchRoom, updateRoom } from "../services/room";
 import { debounce } from "lodash";
-import { checkinBooking, searchBooking } from "../services/booking";
+import {
+  cancelBooking,
+  checkinBooking,
+  searchBooking,
+} from "../services/booking";
 import BookingStatus from "../type/booking-status-enum";
 import RoomState from "../type/room-state-enum";
 import { useNavigate } from "react-router-dom";
@@ -65,6 +69,7 @@ export default function Booking() {
   const bookingId = useRef("");
   const [confirmCheckInDialogOpen, setConfirmCheckInDialogOpen] =
     useState(false);
+  const [confirmCancelDialogOpen, setConfirmCancelDialogOpen] = useState(false);
 
   const fetchRooms = async (search, status) => {
     const rooms = await searchRoom(search, status, state);
@@ -134,6 +139,14 @@ export default function Booking() {
 
       setConfirmCheckInDialogOpen(false);
     }
+  };
+
+  const handleCancel = async () => {
+    const canceled = await cancelBooking(bookingId.current);
+    if (canceled) {
+      setBookings((prev) => prev.filter((b) => b.id !== bookingId.current));
+    }
+    setConfirmCancelDialogOpen(false);
   };
 
   const debouncedSearch = useCallback(
@@ -448,18 +461,24 @@ export default function Booking() {
               <div className="card-content">
                 <div className="card-title">{room.roomName}</div>
                 <div className="room-type">{room.roomType.roomTypeName}</div>
-                <div className="room-prices">
-                  <div className="price-item">
-                    <i className="fas fa-clock"></i>{" "}
-                    {room.roomType.priceByHour.toLocaleString()} VND / giờ
+                <div className="space-y-2">
+                  <div className="flex items-center text-gray-700 space-x-3">
+                    <i className="fas fa-clock"></i>
+                    <span>
+                      {room.roomType.priceByHour.toLocaleString()}₫ / giờ
+                    </span>
                   </div>
-                  <div className="price-item">
-                    <i className="fas fa-sun"></i>{" "}
-                    {room.roomType.priceByDay.toLocaleString()} VND / ngày
+                  <div className="flex items-center text-gray-700 space-x-3">
+                    <i className="fas fa-sun"></i>
+                    <span>
+                      {room.roomType.priceByDay.toLocaleString()}₫ / ngày
+                    </span>
                   </div>
-                  <div className="price-item">
-                    <i className="fas fa-moon"></i>{" "}
-                    {room.roomType.priceOvernight.toLocaleString()} VND / đêm
+                  <div className="flex items-center text-gray-700 space-x-3">
+                    <i className="fas fa-moon"></i>
+                    <span>
+                      {room.roomType.priceOvernight.toLocaleString()}₫ / đêm
+                    </span>
                   </div>
                 </div>
               </div>
@@ -499,12 +518,12 @@ export default function Booking() {
                     locale: vi,
                   })}
                 </span>
-                <span>{booking.totalPrice.toLocaleString()} VNĐ</span>
+                <span>{booking.totalPrice.toLocaleString()} ₫</span>
                 <span>
                   {booking.depositAmount
                     ? booking.depositAmount.toLocaleString()
                     : 0}{" "}
-                  VNĐ
+                  ₫
                 </span>
                 <div className="button-access-group">
                   <button
@@ -556,7 +575,17 @@ export default function Booking() {
                         >
                           Sửa đặt phòng
                         </li>
-                        <li>Hủy đặt phòng</li>
+                        {booking.status === BookingStatus.PENDING && (
+                          <li
+                            onClick={() => {
+                              bookingId.current = booking.id;
+                              setConfirmCancelDialogOpen(true);
+                              setOpenMenuId(null);
+                            }}
+                          >
+                            Hủy đặt phòng
+                          </li>
+                        )}
                       </ul>
                     )}
                   </div>
@@ -582,6 +611,25 @@ export default function Booking() {
                 className="confirm-button"
                 onClick={() => handleCheckin()}
               >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmCancelDialogOpen && (
+        <div className="confirm-dialog">
+          <div className="dialog-content">
+            <p>Xác nhận hủy đơn </p>
+            <div className="dialog-actions">
+              <button
+                className="cancel-button"
+                onClick={() => setConfirmCancelDialogOpen(false)}
+              >
+                Hủy
+              </button>
+              <button className="confirm-button" onClick={() => handleCancel()}>
                 Xác nhận
               </button>
             </div>

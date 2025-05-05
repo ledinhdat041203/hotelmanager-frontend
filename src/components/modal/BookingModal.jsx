@@ -232,6 +232,7 @@ const BookingModal = ({
     setFilteredRooms([]);
     setSearchRoom("");
     setError("");
+    setBookedTimeSlots([]);
     onClose();
   };
   useEffect(() => {
@@ -450,13 +451,13 @@ const BookingModal = ({
               }
             />
             <span style={{ fontWeight: 600 }}>
-              {booking.totalPrice.toLocaleString()} VNĐ
+              {booking.totalPrice.toLocaleString()} ₫
             </span>
           </div>
         </div>
 
         <div className="payment">
-          <span>Khách cần trả: {booking.totalPrice.toLocaleString()} VNĐ</span>
+          <span>Khách cần trả: {booking.totalPrice.toLocaleString()} ₫</span>
           <span>
             Khách đặt cọc:{" "}
             <input
@@ -496,7 +497,7 @@ const BookingModal = ({
               setIsConfirmDialogOpen(true);
             }}
             disabled={error ? true : false}
-            >
+          >
             Nhận phòng
           </button>
           <button

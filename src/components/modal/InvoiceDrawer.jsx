@@ -4,6 +4,7 @@ import Drawer from "./Drawer";
 import { findBookingById, payBooking } from "../../services/booking";
 import { findRoomTypeByRoomId } from "../../services/room";
 import { calculateTime } from "../../utils/caculate-time";
+import { getBookingItemsByBooking } from "../../services/booking-service";
 
 const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
   const [roomType, setRoomType] = useState({
@@ -27,6 +28,7 @@ const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
     totalPrice: 0,
     depositAmount: 0,
     channel: "",
+    totalServicePrice: 0,
   });
   const [room, setRoom] = useState({
     roomId: "",
@@ -37,6 +39,7 @@ const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
   });
 
   const [customerPaid, setCustomerPaid] = useState(0);
+  const [servicesItems, setServiceItems] = useState([]);
 
   const handlePayBooking = async () => {
     const paidedBooking = await payBooking(bookingId, customerPaid);
@@ -60,9 +63,16 @@ const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
       setBooking(booking);
     }
   };
+
+  const fetchBookingItem = async () => {
+    const serviceItems = await getBookingItemsByBooking(bookingId);
+
+    setServiceItems(serviceItems);
+  };
   useEffect(() => {
     if (isOpen) {
       fetchBooking();
+      fetchBookingItem();
     }
   }, [isOpen]);
 
@@ -79,17 +89,18 @@ const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
               <span>Đơn giá</span>
               <span>Thành tiền</span>
             </div>
-            <span
-              style={{
-                fontWeight: "600",
-                color: "#677484",
-                fontSize: "13px",
-                paddingTop: "8px",
-              }}
-            >
-              Tiền phòng
-            </span>
+
             <div className="table-body">
+              <span
+                style={{
+                  fontWeight: "600",
+                  color: "#677484",
+                  fontSize: "13px",
+                  paddingTop: "8px",
+                }}
+              >
+                Tiền phòng
+              </span>
               <div className="table-row" key={booking.id}>
                 <span>1.</span>
                 <span>{roomType.roomTypeName}</span>
@@ -98,9 +109,30 @@ const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
                     {calculateTime(booking.checkInDate, booking.checkOutDate)}
                   </span>
                 </div>
-                <span>{booking.unitPrice.toLocaleString()} VNĐ</span>
-                <span>{booking.totalPrice.toLocaleString("vi-VN")} VNĐ</span>
+                <span>{booking.unitPrice.toLocaleString()} ₫</span>
+                <span>{booking.totalPrice.toLocaleString("vi-VN")} ₫</span>
               </div>
+              <span
+                style={{
+                  fontWeight: "600",
+                  color: "#677484",
+                  fontSize: "13px",
+                  paddingTop: "8px",
+                }}
+              >
+                Tiền dịch vụ
+              </span>
+              {servicesItems.map((item, index) => (
+                <div className="table-row" key={booking.id}>
+                  <span>{index + 1}.</span>
+                  <span>{item.service.name}</span>
+                  <div className="quantity-control">
+                    <span>{item.quantity}</span>
+                  </div>
+                  <span>{item.unitPrice.toLocaleString("vi-VN")} ₫</span>
+                  <span>{item.totalPrice.toLocaleString("vi-VN")} ₫</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -123,16 +155,23 @@ const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
 
           <div className="summary">
             <div class="summary-row">
-              <strong>Tổng cộng:</strong>
+              <strong>Tiền phòng:</strong>
               <span class="summary-value">
-                {booking.totalPrice.toLocaleString()} VNĐ
+                {booking.totalPrice.toLocaleString()} ₫
+              </span>
+            </div>
+
+            <div class="summary-row">
+              <strong>Tiền dịch vụ:</strong>
+              <span class="summary-value">
+                {booking.totalServicePrice.toLocaleString()} ₫
               </span>
             </div>
             <div class="summary-row">
               <strong>Đã cọc:</strong>{" "}
               <span class="summary-value">
                 {" "}
-                {booking.depositAmount?.toLocaleString()} VNĐ
+                {booking.depositAmount?.toLocaleString()} ₫
               </span>
             </div>
             {/* <div class="summary-row">
@@ -141,7 +180,14 @@ const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
             </div> */}
             <div class="summary-row">
               <strong>Còn cần trả:</strong>
-              <span class="summary-value">26,400,000 VNĐ</span>
+              <span class="summary-value">
+                {(
+                  booking.totalPrice +
+                  booking.totalServicePrice -
+                  booking.depositAmount
+                ).toLocaleString()}{" "}
+                ₫
+              </span>
             </div>
           </div>
 
@@ -163,7 +209,21 @@ const InvoiceDrawer = ({ isOpen, onClose, bookingId }) => {
             </div>
             <div class="summary-row">
               <strong>Tiền thừa:</strong>{" "}
-              <span class="summary-value">0 VNĐ</span>
+              <span class="summary-value">
+                {customerPaid -
+                  (booking.totalPrice +
+                    booking.totalServicePrice -
+                    booking.depositAmount) >
+                0
+                  ? (
+                      customerPaid -
+                      (booking.totalPrice +
+                        booking.totalServicePrice -
+                        booking.depositAmount)
+                    ).toLocaleString("vi-VN")
+                  : "0"}{" "}
+                ₫
+              </span>
             </div>
           </div>
           <button className="complete-button" onClick={handlePayBooking}>

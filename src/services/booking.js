@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import {
+  cancelBookingAPI,
   checkinBookingAPI,
   createBookingAPI,
   findAllBookingAPI,
@@ -221,6 +222,25 @@ const checkinBooking = async (bookingId) => {
   }
 };
 
+const cancelBooking = async (bookingId) => {
+  try {
+    const res = await cancelBookingAPI(bookingId);
+
+    const resData = res.data;
+    // console.log("resdata", resData);
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      // console.log("201");
+      toast.success(resData.message);
+      return data;
+    } else {
+      throw new Error(resData.message || "Lỗi hủy đơn");
+    }
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Lỗi hủy đơn");
+  }
+};
+
 export {
   createBooking,
   findAllBooking,
@@ -230,4 +250,5 @@ export {
   updateBooking,
   payBooking,
   checkinBooking,
+  cancelBooking,
 };
