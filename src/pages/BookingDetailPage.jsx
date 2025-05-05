@@ -1,240 +1,27 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, Plus } from "lucide-react";
 import "../styles/BookingDetailPage.css";
 import backgroundImage from "../assets/images/bg.jpg";
-import { useParams } from "react-router-dom";
-import { findBookingById, updateBooking } from "../services/booking";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  cancelBooking,
+  findBookingById,
+  updateBooking,
+} from "../services/booking";
 import { calculateTime } from "../utils/caculate-time";
 import { findByRoomType, findRoomTypeByRoomId } from "../services/room";
 import { calculatePrice } from "../utils/caculate-price";
 import Drawer from "../components/modal/Drawer";
 import InvoiceDrawer from "../components/modal/InvoiceDrawer";
 import CustomerModal from "../components/modal/CustomerModal";
-
-const services = [
-  {
-    id: 1,
-    name: "Golf (Day)",
-    price: 3000000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 2,
-    name: "Fishing (Session)",
-    price: 200000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 3,
-    name: "Childcare (Day)",
-    price: 500000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 4,
-    name: "Car Rental (Day)",
-    price: 2000000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 5,
-    name: "Motorcycle Rental (Day)",
-    price: 150000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 6,
-    name: "Massage (Session)",
-    price: 700000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 7,
-    name: "Sauna (Session)",
-    price: 400000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 8,
-    name: "Haircut (Session)",
-    price: 100000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 9,
-    name: "Chips",
-    price: 30000,
-    unit: "pack",
-    category: "Đồ ăn",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 10,
-    name: "Dried Beef",
-    price: 80000,
-    unit: "portion",
-    category: "Đồ ăn",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 11,
-    name: "Giặt ủi (Bộ)",
-    price: 100000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 12,
-    name: "Dọn phòng (Lần)",
-    price: 50000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 13,
-    name: "Thuê xe đạp (Ngày)",
-    price: 80000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 14,
-    name: "Hướng dẫn viên du lịch (Ngày)",
-    price: 1500000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 15,
-    name: "Đặt vé máy bay",
-    price: 300000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 16,
-    name: "Đặt vé tàu",
-    price: 200000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 17,
-    name: "Thuê lều cắm trại (Ngày)",
-    price: 100000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 18,
-    name: "Dịch vụ spa (Lần)",
-    price: 1200000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 19,
-    name: "Dịch vụ làm móng (Lần)",
-    price: 300000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 20,
-    name: "Dịch vụ trang điểm (Lần)",
-    price: 500000,
-    category: "Dịch vụ",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 21,
-    name: "Nước suối",
-    price: 10000,
-    unit: "chai",
-    category: "Đồ uống",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 22,
-    name: "Cà phê",
-    price: 30000,
-    unit: "ly",
-    category: "Đồ uống",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 23,
-    name: "Trà sữa",
-    price: 40000,
-    unit: "ly",
-    category: "Đồ uống",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 24,
-    name: "Nước ngọt",
-    price: 20000,
-    unit: "lon",
-    category: "Đồ uống",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 25,
-    name: "Bánh mì",
-    price: 15000,
-    unit: "ổ",
-    category: "Đồ ăn",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 26,
-    name: "Phở bò",
-    price: 50000,
-    unit: "tô",
-    category: "Đồ ăn",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 27,
-    name: "Cơm gà",
-    price: 60000,
-    unit: "phần",
-    category: "Đồ ăn",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 28,
-    name: "Bún chả",
-    price: 55000,
-    unit: "phần",
-    category: "Đồ ăn",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 29,
-    name: "Cháo gà",
-    price: 40000,
-    unit: "tô",
-    category: "Đồ ăn",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 30,
-    name: "Trái cây tươi",
-    price: 30000,
-    unit: "phần",
-    category: "Đồ ăn",
-    image: "/placeholder.svg",
-  },
-];
+import { searchService } from "../services/service";
+import { debounce } from "lodash";
+import {
+  createBookingItem,
+  getBookingItemsByBooking,
+  removeBookingItem,
+  updateBookingItem,
+} from "../services/booking-service";
 
 const channels = [
   { id: "direct", name: "Khách đến trực tiếp", icon: "fa-solid fa-store" },
@@ -244,9 +31,10 @@ const channels = [
 ];
 
 export default function BookingDetail() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Tất cả");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedServices, setSelectedServices] = useState([]);
+  const [servicesItems, setServiceItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [quantities, setQuantities] = useState({});
 
@@ -268,6 +56,7 @@ export default function BookingDetail() {
     totalPrice: 0,
     depositAmount: 0,
     channel: "",
+    totalServicePrice: 0,
   });
   const [room, setRoom] = useState({
     roomId: "",
@@ -291,32 +80,24 @@ export default function BookingDetail() {
   const [timeQuantity, setTimeQuantity] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openCustomerModal, setOpenCustomerModal] = useState(false);
+  const [services, setServices] = useState([]);
+  const [searchServiceName, setSearchServiceName] = useState(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const quantity = 1;
 
   const { id: bookingId } = useParams();
 
-  const handleDelete = (id) => {
-    setSelectedServices((prev) => prev.filter((service) => service.id !== id));
-    setQuantities((prev) => {
-      const updatedQuantities = { ...prev };
-      delete updatedQuantities[id];
-      return updatedQuantities;
-    });
-  };
-
-  const handleIncrement = (id) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [id]: (prev[id] || 1) + 1,
-    }));
-  };
-
-  const handleDecrement = (id) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [id]: Math.max((prev[id] || 1) - 1, 1), // Không cho giảm dưới 1
-    }));
+  const handleDelete = async (id) => {
+    const deleted = await removeBookingItem(id);
+    if (deleted) {
+      setServiceItems((prev) => prev.filter((service) => service.id !== id));
+      const { changeTotal } = deleted;
+      setBooking((prev) => ({
+        ...prev,
+        totalServicePrice: prev.totalServicePrice + changeTotal,
+      }));
+    }
   };
 
   const handleSelectRoom = (room) => {
@@ -342,7 +123,7 @@ export default function BookingDetail() {
   };
 
   const filteredServices = services.filter((s) => {
-    const matchTab = activeTab === "Tất cả" || s.category === activeTab;
+    const matchTab = activeTab === "Tất cả" || s.type === activeTab;
     const matchSearch = s.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -356,11 +137,13 @@ export default function BookingDetail() {
     (currentPage + 1) * itemsPerPage
   );
 
-  const toggleService = (service) => {
-    const exists = selectedServices.find((s) => s.id === service.id);
-    setSelectedServices(
-      exists ? [...selectedServices] : [...selectedServices, service]
-    );
+  const handleclickServiceCard = (service) => {
+    const exists = servicesItems.find((s) => s.service?.id === service.id);
+    if (exists) {
+      updateItem(exists.id, exists.quantity + 1);
+    } else {
+      createItem(bookingId, service.id, 1);
+    }
   };
 
   const fetchRoomType = async (roomId) => {
@@ -389,6 +172,38 @@ export default function BookingDetail() {
     }
   };
 
+  const fetchServices = async (name, type, inventory, status) => {
+    const services = await searchService({ name, type, inventory, status });
+    setServices(services);
+  };
+
+  const fetchBookingItem = async () => {
+    const serviceItems = await getBookingItemsByBooking(bookingId);
+
+    setServiceItems(serviceItems);
+  };
+
+  const debouncedSearch = useCallback(
+    debounce(async (name, type, inventory, status) => {
+      try {
+        const services = await searchService({ name, type, inventory, status });
+
+        setServices(services);
+
+        console.log("Kết quả tìm kiếm:", services);
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm:", error);
+      }
+    }, 1000),
+    []
+  );
+
+  const handleChangeSearchName = (e) => {
+    const newValue = e.target.value;
+    setSearchServiceName(e.target.value);
+    debouncedSearch(newValue, activeTab, "", 1);
+  };
+
   const handleEditBooking = async () => {
     const updatedBooking = await updateBooking({
       ...booking,
@@ -397,8 +212,51 @@ export default function BookingDetail() {
     });
   };
 
+  const handleConfirmCancleBooking = async () => {
+    const canceled = await cancelBooking(bookingId);
+    if (canceled) {
+      navigate("/booking");
+    }
+  };
+
+  const createItem = async (bookingId, serviceId, quantity) => {
+    const newBooking = await createBookingItem({
+      bookingId,
+      serviceId,
+      quantity,
+    });
+
+    if (newBooking) {
+      setServiceItems((prev) => [newBooking, ...prev]);
+      setBooking((prev) => ({
+        ...prev,
+        totalServicePrice: prev.totalServicePrice + newBooking.totalPrice,
+      }));
+    }
+  };
+
+  const updateItem = async (bookingId, quantity) => {
+    if (quantity >= 1) {
+      const data = await updateBookingItem(bookingId, { quantity });
+
+      if (data) {
+        const { bookingItem, changeTotal } = data;
+        setServiceItems((prev) =>
+          prev.map((item) => (item.id === bookingItem.id ? bookingItem : item))
+        );
+
+        setBooking((prev) => ({
+          ...prev,
+          totalServicePrice: prev.totalServicePrice + changeTotal,
+        }));
+      }
+    }
+  };
+
   useEffect(() => {
     fetchBooking();
+    fetchServices("", "", "", 1);
+    fetchBookingItem();
   }, []);
 
   useEffect(() => {
@@ -447,6 +305,14 @@ export default function BookingDetail() {
   useEffect(() => {
     console.log("change", booking);
   }, [booking]);
+
+  useEffect(() => {
+    console.log("service item::", servicesItems);
+  }, [servicesItems]);
+
+  useEffect(() => {
+    fetchServices("", activeTab, "", 1);
+  }, [activeTab]);
 
   return (
     <div className="booking-detail-page">
@@ -550,6 +416,8 @@ export default function BookingDetail() {
                   type="text"
                   placeholder="Tìm kiếm dịch vụ"
                   className="search-service-input"
+                  onChange={(e) => handleChangeSearchName(e)}
+                  value={searchServiceName}
                 />
               </div>
 
@@ -571,13 +439,21 @@ export default function BookingDetail() {
                     <div
                       key={service.id}
                       className="service-card"
-                      onClick={() => toggleService(service)}
+                      onClick={() => handleclickServiceCard(service)}
                     >
-                      <img src={backgroundImage} alt={service.name} />
+                      <i
+                        className={
+                          service.type === "Dịch vụ"
+                            ? "fa-solid fa-hand-holding-heart"
+                            : service.type === "Đồ ăn"
+                            ? "fa-solid fa-utensils"
+                            : "fa-solid fa-mug-hot"
+                        }
+                      ></i>
                       <div className="service-info">
                         <h4>{service.name}</h4>
                         <p>
-                          {service.price.toLocaleString("vi-VN")}
+                          {service.sellPrice?.toLocaleString("vi-VN")}₫
                           {service.unit ? `/${service.unit}` : ""}
                         </p>
                       </div>
@@ -704,41 +580,41 @@ export default function BookingDetail() {
                       <div className="quantity-control">
                         <span>{timeQuantity}</span>
                       </div>
-                      <span>{booking.unitPrice.toLocaleString()} VNĐ</span>
+                      <span>{booking.unitPrice.toLocaleString()} ₫</span>
                       <span>
-                        {booking.totalPrice.toLocaleString("vi-VN")} VNĐ
+                        {booking.totalPrice.toLocaleString("vi-VN")} ₫
                       </span>
                     </div>
 
-                    {selectedServices.map((service, index) => (
-                      <div className="table-row" key={service.id}>
+                    {servicesItems.map((item, index) => (
+                      <div className="table-row" key={item.id}>
                         <span>{index + 2}.</span>
-                        <span>{service.name}</span>
+                        <span>{item.service?.name}</span>
                         <div className="quantity-control">
                           <button
                             className="decrement-btn"
-                            onClick={() => handleDecrement(service.id)}
+                            onClick={() =>
+                              updateItem(item.id, item.quantity - 1)
+                            }
+                            disabled={item.quantity === 1}
                           >
                             -
                           </button>
-                          <span>{quantity}</span>
+                          <span>{item.quantity}</span>
                           <button
                             className="increment-btn"
-                            onClick={() => handleIncrement(service.id)}
+                            onClick={() =>
+                              updateItem(item.id, item.quantity + 1)
+                            }
                           >
                             +
                           </button>
                         </div>
-                        <span>{service.price.toLocaleString("vi-VN")}</span>
-                        <span>
-                          {(
-                            (quantities[service.id] || 1) * service.price
-                          ).toLocaleString("vi-VN")}{" "}
-                          VND
-                        </span>
+                        <span>{item.unitPrice?.toLocaleString("vi-VN")} ₫</span>
+                        <span>{item.totalPrice.toLocaleString("vi-VN")}₫</span>
                         <button
                           className="delete-btn"
-                          onClick={() => handleDelete(service.id)}
+                          onClick={() => handleDelete(item.id)}
                         >
                           <i className="fa-solid fa-trash"></i>
                         </button>
@@ -750,13 +626,25 @@ export default function BookingDetail() {
 
               <div className="content-footer">
                 <span>Tổng tiền</span>
-                <span>{booking.totalPrice.toLocaleString()} VNĐ</span>
+                <span>
+                  {(
+                    booking.totalPrice + booking.totalServicePrice
+                  ).toLocaleString()}{" "}
+                  ₫
+                </span>
               </div>
             </div>
 
             <div className="content-detail-footer">
               <div className="footer-buttons">
-                <button className="add-button">Hủy Đơn</button>
+                <button
+                  className="add-button"
+                  onClick={() => {
+                    setIsConfirmDialogOpen(true);
+                  }}
+                >
+                  Hủy Đơn
+                </button>
                 <button className="edit-button" onClick={handleEditBooking}>
                   Lưu
                 </button>
@@ -792,6 +680,28 @@ export default function BookingDetail() {
         }}
         setCustomer={setBooking}
       />
+
+      {isConfirmDialogOpen && (
+        <div className="confirm-dialog">
+          <div className="dialog-content">
+            <p>Bạn có chắc chắn muốn hủy đơn </p>
+            <div className="dialog-actions">
+              <button
+                className="cancel-button"
+                onClick={() => setIsConfirmDialogOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                className="confirm-button"
+                onClick={() => handleConfirmCancleBooking()}
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

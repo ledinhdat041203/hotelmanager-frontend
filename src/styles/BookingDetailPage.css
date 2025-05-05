@@ -193,6 +193,18 @@
   margin-bottom: 8px;
 }
 
+.service-card > i {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 16px;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .main-content-detail {
   display: flex;
   flex-direction: column; /* Sắp xếp các phần tử theo chiều dọc */
@@ -227,7 +239,7 @@
 .content-body {
   flex: 1; /* Chiếm toàn bộ không gian còn lại */
   overflow-y: auto; /* Thêm thanh cuộn nếu nội dung quá dài */
-  padding: 16px; /* Khoảng cách bên trong */
+  padding: 8px; /* Khoảng cách bên trong */
   background-color: #f9fafb; /* Màu nền nhạt */
   border-radius: 8px; /* Bo góc */
 }
@@ -368,9 +380,9 @@
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
-.content-body .room-details {
+.main-content-detail .content-body .room-details {
   background-color: #ffffff; /* Màu nền trắng */
-  padding: 12px 16px; /* Khoảng cách bên trong */
+  padding: 4px 16px; /* Khoảng cách bên trong */
   border-radius: 8px; /* Bo góc */
   border: 1px solid #e5e7eb; /* Viền nhạt */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -437,7 +449,7 @@
   display: flex;
   flex-direction: column; /* Sắp xếp các phần tử theo chiều dọc */
   margin-top: 8px; /* Khoảng cách trên */
-  max-height: 200px;
+  max-height: 250px;
 }
 
 .room-items .table-header {
@@ -629,4 +641,57 @@
 .booking-detail-page .channel-option span {
   font-size: 14px;
   color: #374151;
+}
+
+.service-card {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+}
+
+.service-card:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.service-card > i {
+  width: 50px;
+  height: 50px;
+  font-size: 22px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  color: white;
+}
+
+.service-card .fa-hand-holding-heart {
+  background-color: #ff6b6b; /* đỏ hồng - dịch vụ */
+}
+
+.service-card .fa-utensils {
+  background-color: #4ecdc4; /* xanh ngọc - đồ ăn */
+}
+
+.service-card .fa-mug-hot {
+  background-color: #ffa502; /* cam - nước uống */
+}
+
+.service-info h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.service-info p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #666;
 }

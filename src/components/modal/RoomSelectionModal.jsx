@@ -140,8 +140,8 @@ const RoomSelectionModal = ({
                   ? roomType.priceByDay.toLocaleString()
                   : bookingInfo.type === "Đêm"
                   ? roomType.priceOvernight.toLocaleString()
-                  : roomType.priceByHour.toLocaleString()}{" "}
-                VND
+                  : roomType.priceByHour.toLocaleString()}
+                ₫
               </span>
               <span>
                 {calculateTime(
@@ -150,7 +150,7 @@ const RoomSelectionModal = ({
                 )}
               </span>
               <div>
-                <span>{reviewPrice(roomType).toLocaleString()} VND</span>
+                <span>{reviewPrice(roomType).toLocaleString()}₫</span>
                 <button
                   className="add-button"
                   style={{ padding: "8px 14px" }}

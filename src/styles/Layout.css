@@ -21,3 +21,9 @@
   overflow-y: auto;
   background-color: #ffffff; /* Màu nền cho Routes */
 }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #ccc;
+}

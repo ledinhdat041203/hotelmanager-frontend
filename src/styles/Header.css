@@ -48,6 +48,7 @@
   gap: 16px; /* Khoảng cách giữa các tabs */
   flex: 1; /* Tabs chiếm không gian còn lại giữa logo và user-info */
   margin: 16px;
+  border-bottom: none;
 }
 
 /* Tab Item */

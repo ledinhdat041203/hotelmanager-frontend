@@ -110,6 +110,15 @@ const checkinBookingAPI = async (bookingId) => {
   }
 };
 
+const cancelBookingAPI = async (bookingId) => {
+  try {
+    const res = await axiosInstance.delete(`/booking/${bookingId}/cancel`);
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export {
   createBookingAPI,
   findAllBookingAPI,
@@ -119,4 +128,5 @@ export {
   updateBookingAPI,
   payBookingAPI,
   checkinBookingAPI,
+  cancelBookingAPI,
 };
