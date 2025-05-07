@@ -25,7 +25,10 @@ const LoginPage = () => {
     const res = await login(userName, password);
     if (res) {
       loginContext(res.access_token, res.user);
-      navigate("/booking");
+      const user = res.user;
+      console.log("=========================", user);
+      if (user.role === "Quản lý") navigate("/overview");
+      else navigate("/booking");
     }
   };
   return (

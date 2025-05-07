@@ -398,7 +398,7 @@ export default function Booking() {
       />
 
       {viewMode === "card" ? (
-        <div className="grid">
+        <div className="grid-card">
           {rooms.map((room) => (
             <div
               className={

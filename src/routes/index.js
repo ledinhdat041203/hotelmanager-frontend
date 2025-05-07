@@ -18,6 +18,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import "../styles/Layout.css";
 import ServiceManagement from "../pages/ServiceManagementPage copy";
 import Dashboard from "../pages/DashBoardPage";
+import EmployeeManagement from "../pages/EmployeeManagementPage";
 
 // Layout dùng chung
 const Layout = () => {
@@ -52,6 +53,7 @@ const AppRoutes = () => {
           <Route path="booking-detail/:id" element={<BookingDetail />} />
           <Route path="room-management" element={<RoomManagement />} />
           <Route path="service-management" element={<ServiceManagement />} />
+          <Route path="employee-management" element={<EmployeeManagement />} />
           <Route path="overview" element={<Dashboard />} />
           <Route path="report" element={<RoomManagement />} />
           <Route path="home" element={<HomePage />} />
