@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
-  const [isManager, setIsManager] = useState(false); // State để quản lý trạng thái của nút "Quản lý"
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State để quản lý menu
   const { user, logout } = useContext(UserContext);
   const [tabActive, setTabActive] = useState("overview");
+  const [isManager, setIsManager] = useState(user.role === "Quản lý"); // State để quản lý trạng thái của nút "Quản lý"
 
   const handleLogout = () => {
     logout();
@@ -19,7 +19,7 @@ const Header = () => {
 
   // Gọi hàm để chuyển trạng thái
   const handleChangeState = () => {
-    if (user.role === 1) {
+    if (user.role === "Quản lý") {
       setIsManager((prev) => !prev); // chỉ cập nhật state
     }
   };
@@ -28,13 +28,13 @@ const Header = () => {
   useEffect(() => {
     if (!isManager) {
       navigate("/booking");
-    } else if (isManager && user.role === 1) {
+    } else if (isManager && user.role === "Quản lý") {
       navigate(`/${tabActive}`);
     }
   }, [isManager, tabActive]);
 
   useEffect(() => {
-    if (user.role === 1) {
+    if (user.role === "Quản lý") {
       if (isManager) {
         navigate(`/${tabActive}`);
       } else {
@@ -82,6 +82,14 @@ const Header = () => {
           >
             Báo cáo
           </button>
+          <button
+            className={`tab-item ${
+              tabActive === "employee-management" ? "active" : ""
+            }`}
+            onClick={() => setTabActive("employee-management")}
+          >
+            Nhân viên
+          </button>
         </div>
       ) : (
         <div className="tabs">
@@ -95,17 +103,20 @@ const Header = () => {
         </div>
       )}
 
-      {!isManager ? (
-        <button className="btn-manager" onClick={handleChangeState}>
-          <i className="fa-brands fa-web-awesome"></i>
-          <span>Quản lý</span>
-        </button>
-      ) : (
-        <button className="btn-manager" onClick={() => setIsManager(false)}>
-          <i className="fa-brands fa-font-awesome"></i>
-          <span>Lễ tân</span>
-        </button>
-      )}
+      {user.role === "Quản lý" ? (
+        !isManager ? (
+          <button className="btn-manager" onClick={handleChangeState}>
+            <i className="fa-brands fa-web-awesome"></i>
+            <span>Quản lý</span>
+          </button>
+        ) : (
+          <button className="btn-manager" onClick={() => setIsManager(false)}>
+            <i className="fa-brands fa-font-awesome"></i>
+            <span>Lễ tân</span>
+          </button>
+        )
+      ) : null}
+
       <div className="user-info">
         <img src={avata} alt="User Avatar" className="avatar" />
         <div className="user-name">{user.fullName}</div>
