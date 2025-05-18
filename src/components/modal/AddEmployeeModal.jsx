@@ -1,6 +1,7 @@
 import { assign } from "lodash";
 import React, { useEffect, useState } from "react";
 import { uploadAvatar } from "../../services/user";
+import Loader from "../Loader";
 
 export default function AddEmployeeModal({
   show,
@@ -11,6 +12,7 @@ export default function AddEmployeeModal({
 }) {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,9 +24,11 @@ export default function AddEmployeeModal({
 
   const saveAvatar = async () => {
     if (avatarFile) {
+      setLoading(true);
       const res = await uploadAvatar(avatarFile);
       if (res) {
         employee.avatar = res.url;
+        setLoading(false);
       }
     }
   };
@@ -64,170 +68,185 @@ export default function AddEmployeeModal({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] bg-black bg-opacity-50 flex items-start justify-center pt-10 overflow-y-auto">
+    <div className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      {loading && <Loader />}
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl p-8 relative border border-green-100">
         <h3 className="text-2xl font-bold text-green-700 mb-6">
           Thêm nhân viên mới
         </h3>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8"
-        >
-          <div className="flex flex-col items-center gap-6 ">
-            <div className="w-36 h-36 rounded-full border-4  overflow-hidden shadow-lg hover:scale-105 transition-transform duration-200">
-              {avatarPreview ? (
-                <img
-                  src={avatarPreview}
-                  alt="Avatar Preview"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                  Avatar
+        <form onSubmit={handleSubmit} className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Left Column - Avatar & Notes */}
+            <div className="space-y-6">
+              <div className="flex flex-col items-center gap-4">
+                <div className="relative group">
+                  <div className="w-40 h-40 rounded-full border-4 border-gray-100 overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105">
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="Avatar Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-400">
+                        <i className="fas fa-user text-4xl"></i>
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <i className="fas fa-camera text-white text-2xl"></i>
+                  </div>
                 </div>
-              )}
-            </div>
-            <label className="relative cursor-pointer bg-green-50 hover:bg-green-100 border border-dashed  px-4 py-2 rounded-xl text-sm text-green-700 font-medium text-center w-full text-center">
-              Chọn ảnh
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
-            </label>
-            <div className="w-full">
-              <label className="mb-1 font-medium text-gray-700 block">
-                Ghi chú
-              </label>
-              <textarea
-                rows="4"
-                placeholder="Ghi chú thêm nếu cần"
-                name="notes"
-                value={employee.notes}
-                onChange={handleInputChange}
-                className="border  rounded-lg px-3 py-2 w-full  h-full focus:ring-2 focus:border-green-300 focus:outline-none resize-none"
-              ></textarea>
-            </div>
-          </div>
 
-          {/* Form fields column */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-sm">
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">Họ tên</label>
-              <input
-                type="text"
-                placeholder="Nhập họ tên"
-                name="fullName"
-                value={employee.fullName}
-                onChange={handleInputChange}
-                className="border rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">Chức vụ</label>
-              <select
-                className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-                name="role"
-                value={employee.role}
-                onChange={handleInputChange}
-              >
-                <option value="">Chọn chức vụ</option>
-                <option>Quản lý</option>
-                <option>Lễ tân</option>
-              </select>
-            </div>
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                placeholder="example@email.com"
-                className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-                name="email"
-                value={employee.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">
-                Điện thoại
-              </label>
-              <input
-                type="text"
-                placeholder="0123456789"
-                className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-                name="phone"
-                value={employee.phone}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">
-                Trạng thái
-              </label>
-              <select
-                className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-                name="status"
-                value={employee.status}
-                onChange={handleInputChange}
-              >
-                <option value={1}>Đang làm việc</option>
-                <option value={0}>Đã nghỉ</option>
-              </select>
-            </div>
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">
-                Ngày vào làm
-              </label>
-              <input
-                type="date"
-                className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-                name="startDate"
-                value={employee.startDate}
-                onChange={handleInputChange}
-              />
+                <label className="relative cursor-pointer bg-white hover:bg-gray-50 border-2 border-dashed border-gray-200 px-6 py-3 rounded-xl text-sm text-gray-600 font-medium text-center w-full transition-all duration-200 hover:border-green-500 hover:text-green-600">
+                  <i className="fas fa-upload mr-2"></i>
+                  Chọn ảnh
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ghi chú
+                </label>
+                <textarea
+                  rows="4"
+                  placeholder="Nhập ghi chú nếu cần..."
+                  name="notes"
+                  value={employee.notes}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 resize-none"
+                ></textarea>
+              </div>
             </div>
 
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">
-                Ngày sinh
-              </label>
-              <input
-                type="date"
-                className="border rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-                name="dateOfBirth"
-                value={employee.dateOfBirth}
-                onChange={handleInputChange}
-              />
-            </div>
+            {/* Form fields column */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-sm">
+              <div className="flex flex-col">
+                <label className="mb-1 font-medium text-gray-700">Họ tên</label>
+                <input
+                  type="text"
+                  placeholder="Nhập họ tên"
+                  name="fullName"
+                  value={employee.fullName}
+                  onChange={handleInputChange}
+                  className="border rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="mb-1 font-medium text-gray-700">
+                  Chức vụ
+                </label>
+                <select
+                  className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
+                  name="role"
+                  value={employee.role}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Chọn chức vụ</option>
+                  <option>Quản lý</option>
+                  <option>Lễ tân</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label className="mb-1 font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  placeholder="example@email.com"
+                  className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
+                  name="email"
+                  value={employee.email}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="mb-1 font-medium text-gray-700">
+                  Điện thoại
+                </label>
+                <input
+                  type="text"
+                  placeholder="0123456789"
+                  className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
+                  name="phone"
+                  value={employee.phone}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="mb-1 font-medium text-gray-700">
+                  Trạng thái
+                </label>
+                <select
+                  className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
+                  name="status"
+                  value={employee.status}
+                  onChange={handleInputChange}
+                >
+                  <option value={1}>Đang làm việc</option>
+                  <option value={0}>Đã nghỉ</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label className="mb-1 font-medium text-gray-700">
+                  Ngày vào làm
+                </label>
+                <input
+                  type="date"
+                  className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
+                  name="startDate"
+                  value={employee.startDate}
+                  onChange={handleInputChange}
+                />
+              </div>
 
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">
-                Giới tính
-              </label>
-              <select
-                className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-                name="gender"
-                value={employee.gender}
-                onChange={handleInputChange}
-              >
-                <option value={"Nam"}>Nam</option>
-                <option value={"Nữ"}>Nữ</option>
-                <option value={"Khác"}>Khác</option>
-              </select>
-            </div>
+              <div className="flex flex-col">
+                <label className="mb-1 font-medium text-gray-700">
+                  Ngày sinh
+                </label>
+                <input
+                  type="date"
+                  className="border rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
+                  name="dateOfBirth"
+                  value={employee.dateOfBirth}
+                  onChange={handleInputChange}
+                />
+              </div>
 
-            <div className="sm:col-span-2 flex flex-col">
-              <label className="mb-1 font-medium text-gray-700">Địa chỉ</label>
-              <input
-                type="text"
-                placeholder="123 Đường ABC, Quận X"
-                name="address"
-                value={employee.address}
-                onChange={handleInputChange}
-                className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
-              />
+              <div className="flex flex-col">
+                <label className="mb-1 font-medium text-gray-700">
+                  Giới tính
+                </label>
+                <select
+                  className="border  rounded-lg px-4 py-2 focus:ring-2 focus:border-green-300 focus:outline-none"
+                  name="gender"
+                  value={employee.gender}
+                  onChange={handleInputChange}
+                >
+                  <option value={"Nam"}>Nam</option>
+                  <option value={"Nữ"}>Nữ</option>
+                  <option value={"Khác"}>Khác</option>
+                </select>
+              </div>
+
+              <div className="sm:col-span-2 space-y-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  Địa chỉ
+                </label>
+                <input
+                  type="text"
+                  placeholder="123 Đường ABC, Quận X"
+                  name="address"
+                  value={employee.address}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
             </div>
           </div>
 
@@ -250,13 +269,11 @@ export default function AddEmployeeModal({
         </form>
 
         <button
-          className="border-none absolute top-3 right-3 w-8 h-8 flex items-center justify-center 
-             rounded-full hover:bg-red-100 
-             hover:text-red-700 text-base transition-all duration-150 shadow-sm"
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200"
           onClick={handleClose}
           aria-label="Đóng modal"
         >
-          ✕
+          <i className="fas fa-times"></i>
         </button>
       </div>
     </div>

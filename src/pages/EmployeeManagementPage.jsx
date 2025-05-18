@@ -187,150 +187,210 @@ export default function EmployeeManagement() {
         </button>
       </div>
 
-      <div className="overflow-x-auto rounded-xl shadow-lg">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="bg-green-100 text-green-900 text-left">
-              <th className="px-5 py-3 border-b-2"></th>
-              <th className="px-5 py-3 border-b-2">STT</th>
-              <th className="px-5 py-3 border-b-2">Họ tên</th>
-              <th className="px-5 py-3 border-b-2"> Chức vụ</th>
-              <th className="px-5 py-3 border-b-2">Điện thoại</th>
-              <th className="px-5 py-3 border-b-2">Email</th>
-              <th className="px-5 py-3 border-b-2">Trạng thái</th>
-              <th className="px-5 py-3 border-b-2 text-center">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {employees.map((emp, i) => (
-              <React.Fragment key={emp.userId}>
-                <tr className="hover:bg-green-50 group">
-                  <td
-                    className="px-5 py-3 border-b cursor-pointer"
-                    onClick={() => toggleRow(i)}
-                  >
-                    {expandedRow === i ? (
-                      <ChevronUp size={18} />
-                    ) : (
-                      <ChevronDown size={18} />
-                    )}
-                  </td>
-                  <td className="px-5 py-3 border-b">{i + 1}</td>
-                  <td className="px-5 py-3 border-b font-medium text-gray-800">
-                    {emp.fullName}
-                  </td>
-                  <td className="px-5 py-3 border-b text-gray-600">
-                    {emp.role}
-                  </td>
-                  <td className="px-5 py-3 border-b text-gray-600">
-                    {emp.phone}
-                  </td>
-                  <td className="px-5 py-3 border-b text-gray-600">
-                    {emp.email}
-                  </td>
-                  <td className="px-5 py-3 border-b">
-                    <span
-                      className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                        emp.status === 1
-                          ? "text-green-800 bg-green-200"
-                          : "text-gray-600 bg-gray-200"
-                      }`}
-                    >
-                      {emp.status === 1 ? "Đang làm việc" : "Đã nghỉ"}
-                    </span>
-                  </td>
-                  <td className="text-center">
-                    <div className="flex justify-center gap-2">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto max-h-[calc(100vh-250px)]">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-6 py-4"></th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                  STT
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                  Họ tên
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                  Chức vụ
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                  Điện thoại
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                  Email
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                  Trạng thái
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
+                  Hành động
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {employees.map((emp, i) => (
+                <React.Fragment key={emp.userId}>
+                  <tr className="hover:bg-gray-50 transition-colors duration-200">
+                    <td className="px-6 py-4">
                       <button
-                        onClick={() => handleEditEmp(emp)}
-                        title="Sửa thông tin"
-                        className="border-none w-8 h-8 flex items-center justify-center rounded-full 
-                 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 
-                 transition duration-150"
+                        onClick={() => toggleRow(i)}
+                        className=" hover:text-gray-600 transition-colors duration-200 border-none"
                       >
-                        <i className="fas fa-edit text-sm"></i>
-                      </button>
-
-                      <button
-                        // onClick={() =>
-                        //   handleChangeStatusRoom(room.roomId, room.status)
-                        // }
-                        // title={
-                        //   room.status === 1 ? "Khoá phòng" : "Mở khoá phòng"
-                        // }
-                        className="border-none w-8 h-8 flex items-center justify-center rounded-full 
-                 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 
-                 transition duration-150"
-                      >
-                        {true ? (
-                          <i className="fa-solid fa-lock text-sm"></i>
+                        {expandedRow === i ? (
+                          <ChevronUp size={18} />
                         ) : (
-                          <i className="fa-solid fa-lock-open text-sm text-blue-600"></i>
+                          <ChevronDown size={18} />
                         )}
                       </button>
-                    </div>
-                  </td>
-                </tr>
-                {expandedRow === i && (
-                  <tr className="border border-gray-400 bg-green-100 text-sm">
-                    <td
-                      colSpan={8}
-                      className="px-6 py-4 border-b text-gray-700"
-                    >
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                        {/* Avatar */}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{i + 1}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
                         <img
-                          src={emp.avatar}
-                          alt="Avatar"
-                          className="w-24 h-24 rounded-full object-cover border shadow"
+                          src={emp.avatar || "https://via.placeholder.com/40"}
+                          alt={emp.fullName}
+                          className="w-10 h-10 rounded-full object-cover border border-gray-200"
                         />
-
-                        {/* Thông tin chi tiết */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                          <p>
-                            <strong>Họ tên:</strong> {emp.fullName}
-                          </p>
-                          <p>
-                            <strong>Giới tính:</strong> {emp.gender}
-                          </p>
-                          <p>
-                            <strong>Email:</strong> {emp.email}
-                          </p>
-                          <p>
-                            <strong>Số điện thoại:</strong> {emp.phone}
-                          </p>
-                          <p>
-                            <strong>Ngày sinh:</strong>{" "}
-                            {emp.dateOfBirth
-                              ? new Date(emp.dateOfBirth).toLocaleDateString(
-                                  "vi-VN"
-                                )
-                              : "Chưa cập nhật"}
-                          </p>
-                          <p>
-                            <strong>Ngày vào làm:</strong>{" "}
-                            {emp.startDate
-                              ? new Date(emp.startDate).toLocaleDateString(
-                                  "vi-VN"
-                                )
-                              : "Chưa cập nhật"}
-                          </p>
-                          <p className="col-span-2">
-                            <strong>Địa chỉ:</strong>{" "}
-                            {emp.address || "Chưa cập nhật"}
-                          </p>
-                          <p className="col-span-2">
-                            <strong>Ghi chú:</strong> {emp.notes || "Không có"}
-                          </p>
-                        </div>
+                        <span className="font-medium text-gray-800">
+                          {emp.fullName}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {emp.role}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {emp.phone}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {emp.email}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          emp.status === 1
+                            ? "bg-green-100 text-green-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {emp.status === 1 ? "Đang làm việc" : "Đã nghỉ"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => handleEditEmp(emp)}
+                          title="Sửa thông tin"
+                          className="p-3 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors duration-200 border-none"
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          title={
+                            emp.status === 1
+                              ? "Khoá tài khoản"
+                              : "Mở khoá tài khoản"
+                          }
+                          className="p-3 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200 border-none"
+                        >
+                          {emp.status === 1 ? (
+                            <i className="fa-solid fa-lock"></i>
+                          ) : (
+                            <i className="fa-solid fa-lock-open"></i>
+                          )}
+                        </button>
                       </div>
                     </td>
                   </tr>
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+                  {expandedRow === i && (
+                    <tr className="bg-gray-50">
+                      <td colSpan={8} className="px-6 py-6">
+                        <div className="flex flex-col md:flex-row gap-8">
+                          <div className="flex-shrink-0">
+                            <img
+                              src={
+                                emp.avatar || "https://via.placeholder.com/150"
+                              }
+                              alt={emp.fullName}
+                              className="w-32 h-32 rounded-lg object-cover border border-gray-200 shadow-sm"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+                            <div className="space-y-4">
+                              <div>
+                                <span className="text-sm font-medium text-gray-500">
+                                  Họ tên:
+                                </span>
+                                <p className="mt-1 text-gray-800">
+                                  {emp.fullName}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-sm font-medium text-gray-500">
+                                  Giới tính:
+                                </span>
+                                <p className="mt-1 text-gray-800">
+                                  {emp.gender}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-sm font-medium text-gray-500">
+                                  Email:
+                                </span>
+                                <p className="mt-1 text-gray-800">
+                                  {emp.email}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-sm font-medium text-gray-500">
+                                  Số điện thoại:
+                                </span>
+                                <p className="mt-1 text-gray-800">
+                                  {emp.phone}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="space-y-4">
+                              <div>
+                                <span className="text-sm font-medium text-gray-500">
+                                  Ngày sinh:
+                                </span>
+                                <p className="mt-1 text-gray-800">
+                                  {emp.dateOfBirth
+                                    ? new Date(
+                                        emp.dateOfBirth
+                                      ).toLocaleDateString("vi-VN")
+                                    : "Chưa cập nhật"}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-sm font-medium text-gray-500">
+                                  Ngày vào làm:
+                                </span>
+                                <p className="mt-1 text-gray-800">
+                                  {emp.startDate
+                                    ? new Date(
+                                        emp.startDate
+                                      ).toLocaleDateString("vi-VN")
+                                    : "Chưa cập nhật"}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-sm font-medium text-gray-500">
+                                  Địa chỉ:
+                                </span>
+                                <p className="mt-1 text-gray-800">
+                                  {emp.address || "Chưa cập nhật"}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-sm font-medium text-gray-500">
+                                  Ghi chú:
+                                </span>
+                                <p className="mt-1 text-gray-800">
+                                  {emp.notes || "Không có"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <AddEmployeeModal

@@ -238,6 +238,10 @@ const ServiceModal = ({
   const [selectedServices, setSelectedServices] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [quantities, setQuantities] = useState({});
+  const [servicesItems, setServiceItems] = useState([]);
+  const [searchServiceName, setSearchServiceName] = useState(null);
+
+
 
   const handleDelete = (id) => {
     setSelectedServices((prev) => prev.filter((service) => service.id !== id));

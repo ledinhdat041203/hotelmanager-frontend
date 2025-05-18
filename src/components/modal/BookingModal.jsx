@@ -485,10 +485,10 @@ const BookingModal = ({
         </div>
 
         <div className="button-group">
-          <div onClick={onOpenServiceModal}>
+          {/* <div onClick={onOpenServiceModal}>
             <i class="fa-solid fa-circle-plus"></i>
             <span>Thêm dịch vụ</span>
-          </div>
+          </div> */}
           <button
             className="add-button"
             style={{ padding: "8px 14px" }}
