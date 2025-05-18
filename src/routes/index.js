@@ -19,6 +19,7 @@ import "../styles/Layout.css";
 import ServiceManagement from "../pages/ServiceManagementPage copy";
 import Dashboard from "../pages/DashBoardPage";
 import EmployeeManagement from "../pages/EmployeeManagementPage";
+import Report from "../pages/Report";
 
 // Layout dùng chung
 const Layout = () => {
@@ -55,7 +56,7 @@ const AppRoutes = () => {
           <Route path="service-management" element={<ServiceManagement />} />
           <Route path="employee-management" element={<EmployeeManagement />} />
           <Route path="overview" element={<Dashboard />} />
-          <Route path="report" element={<RoomManagement />} />
+          <Route path="report" element={<Report />} />
           <Route path="home" element={<HomePage />} />
         </Route>
       </Routes>

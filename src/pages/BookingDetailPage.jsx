@@ -36,7 +36,6 @@ export default function BookingDetail() {
   const [searchQuery, setSearchQuery] = useState("");
   const [servicesItems, setServiceItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [quantities, setQuantities] = useState({});
 
   const [searchRoom, setSearchRoom] = useState("");
   const [filteredRooms, setFilteredRooms] = useState([]);
@@ -83,8 +82,6 @@ export default function BookingDetail() {
   const [services, setServices] = useState([]);
   const [searchServiceName, setSearchServiceName] = useState(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-
-  const quantity = 1;
 
   const { id: bookingId } = useParams();
 

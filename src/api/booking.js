@@ -119,6 +119,17 @@ const cancelBookingAPI = async (bookingId) => {
   }
 };
 
+const findBookingByDateAPI = async (from, too) => {
+  try {
+    const res = await axiosInstance.get("/booking/get-booking-by-date", {
+      params: { from, too },
+    });
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export {
   createBookingAPI,
   findAllBookingAPI,
@@ -129,4 +140,5 @@ export {
   payBookingAPI,
   checkinBookingAPI,
   cancelBookingAPI,
+  findBookingByDateAPI,
 };
