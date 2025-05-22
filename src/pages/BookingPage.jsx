@@ -311,6 +311,7 @@ export default function Booking() {
                 roomName: e.target.value,
                 customerName: filterCustomerName,
                 channel: selectedChannel,
+                status: [BookingStatus.PENDING, BookingStatus.CHECKED_IN],
               });
             }}
             className="filter-input"
@@ -325,6 +326,7 @@ export default function Booking() {
                 roomName: filterRoomName,
                 customerName: e.target.value,
                 channel: selectedChannel,
+                status: [BookingStatus.PENDING, BookingStatus.CHECKED_IN],
               });
             }}
             className="filter-input"
@@ -492,6 +494,7 @@ export default function Booking() {
             <span>Tên phòng</span>
             <span>Kênh bán</span>
             <span>Khách đặt</span>
+            <span>Số CCCD</span>
             <span>Giờ nhận</span>
             <span>Giờ trả</span>
             <span>Thành tiền</span>
@@ -508,6 +511,7 @@ export default function Booking() {
                 <span>
                   {booking.customerName ? booking.customerName : "Khách lẻ"}
                 </span>
+                <span>{booking.cccd ? booking.cccd : "---"}</span>
                 <span>
                   {format(new Date(booking.checkInDate), "dd/MM/yyyy, HH:mm", {
                     locale: vi,

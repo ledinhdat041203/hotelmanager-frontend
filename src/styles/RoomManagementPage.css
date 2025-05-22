@@ -205,7 +205,11 @@
 
 /* Add Button Container */
 .add-button-container {
-  position: relative; /* Để định vị menu thả xuống */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
 }
 
 .action-button:hover {

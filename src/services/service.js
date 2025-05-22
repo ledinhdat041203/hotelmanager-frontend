@@ -1,10 +1,10 @@
 import { toast } from "react-toastify";
 import {
   createServiceAPI,
+  importProductAPI,
   searchServiceAPI,
-  updaetServiceAPI,
+  updateServiceAPI,
 } from "../api/service";
-import { update } from "lodash";
 
 const searchService = async (searchData) => {
   if (!searchData.name) {
@@ -65,7 +65,7 @@ const createService = async (serviceDto) => {
 const updateService = async (id, updateDto) => {
   console.log(id, updateDto);
   try {
-    const res = await updaetServiceAPI(id, updateDto);
+    const res = await updateServiceAPI(id, updateDto);
     const resData = res.data;
     if (resData.statusCode === 200) {
       const data = resData.data;
@@ -82,4 +82,24 @@ const updateService = async (id, updateDto) => {
   }
 };
 
-export { searchService, createService, updateService };
+const importProduct = async (importServices) => {
+  try {
+    const importServiceDto = importServices.map((item) => ({
+      serviceId: item.id,
+      quantity: item.quantity,
+    }));
+    const res = await importProductAPI(importServiceDto);
+    const resData = res.data;
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      toast.success(resData.message);
+      return data;
+    }
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message ||
+        "Nhập hàng thất bại. Vui lòng kiểm tra lại thông tin."
+    );
+  }
+};
+export { searchService, createService, updateService, importProduct };

@@ -99,7 +99,7 @@ const Report = () => {
       dataIndex: "totalprice",
       key: "totalprice",
       width: 150,
-      render: (amount) => amount.toLocaleString("vi-VN") + " VNĐ",
+      render: (amount) => Number(amount).toLocaleString("vi-VN") + " VNĐ",
     },
   ];
 
@@ -167,7 +167,7 @@ const Report = () => {
 
   // Tính tổng tiền dịch vụ
   const totalServiceAmount = services?.reduce(
-    (sum, service) => sum + service.revenue,
+    (sum, service) => sum + +service.totalprice,
     0
   );
 

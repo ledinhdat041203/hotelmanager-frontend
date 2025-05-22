@@ -15,6 +15,7 @@ import {
 } from "../services/service";
 import AddProductModal from "../components/modal/AddProductModal";
 import AddServiceModal from "../components/modal/AddServiceModal";
+import ImportProductModal from "../components/modal/ImportProductModal";
 const serviceGroups = [
   { name: "Tất cả", icon: "fa-solid fa-border-all" },
   { name: "Dịch vụ", icon: "fa-solid fa-hand-holding-heart" },
@@ -52,7 +53,7 @@ const ServiceManagement = () => {
 
   const [openGroupServices, setOpenGroupServices] = useState(false);
   const [openInventoryServices, setOpenInventoryServices] = useState(false);
-
+  const [isOpenImportModal, setIsOpenImportModal] = useState(false);
   const [product, setProduct] = useState({
     id: "",
     name: "",
@@ -250,14 +251,16 @@ const ServiceManagement = () => {
     setServices(services);
   };
   useEffect(() => {
-    fetchRoomTypes(searchData, status);
-    fetchServices(
-      searchServiceName,
-      selectedServiceGroup,
-      selectedInventoty,
-      status
-    );
-  }, []);
+    if (!isOpenImportModal) {
+      fetchRoomTypes(searchData, status);
+      fetchServices(
+        searchServiceName,
+        selectedServiceGroup,
+        selectedInventoty,
+        status
+      );
+    }
+  }, [isOpenImportModal]);
 
   return (
     <div className="container service-management">
@@ -347,13 +350,26 @@ const ServiceManagement = () => {
           )}
         </div>
 
+        {/* <div
+          className="add-button-container"
+          style={{ marginLeft: "auto" }}
+        ></div> */}
+
         <div className="add-button-container" style={{ marginLeft: "auto" }}>
+          <button
+            className="import-button"
+            style={{ backgroundColor: "#1976d2" }}
+            onClick={() => setIsOpenImportModal(!isOpenImportModal)}
+          >
+            + Nhập hàng
+          </button>
           <button
             className="add-button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             + Thêm mới
           </button>
+
           {isDropdownOpen && (
             <div className="dropdown-menu">
               <button
@@ -512,6 +528,11 @@ const ServiceManagement = () => {
         onSave={handleSaveProduct}
         product={product}
         setProduct={setProduct}
+      />
+
+      <ImportProductModal
+        isOpen={isOpenImportModal}
+        onClose={() => setIsOpenImportModal(false)}
       />
     </div>
   );

@@ -21,7 +21,7 @@ const createServiceAPI = async (serviceDto) => {
   }
 };
 
-const updaetServiceAPI = async (id, updateDto) => {
+const updateServiceAPI = async (id, updateDto) => {
   try {
     const res = await axiosInstance.put(`/service/${id}`, updateDto);
     return res;
@@ -30,4 +30,18 @@ const updaetServiceAPI = async (id, updateDto) => {
   }
 };
 
-export { searchServiceAPI, createServiceAPI, updaetServiceAPI };
+const importProductAPI = async (importServices) => {
+  try {
+    const res = await axiosInstance.put("/service/import", importServices);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  searchServiceAPI,
+  createServiceAPI,
+  updateServiceAPI,
+  importProductAPI,
+};

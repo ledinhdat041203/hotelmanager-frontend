@@ -12,7 +12,7 @@ const CustomerModal = ({ isOpen, onClose, custommer, setCustomer }) => {
   };
 
   const handleCloseModal = () => {
-    setCustomer({ customerName: "", customerPhone: "", cccd: "" });
+    // setCustomer({ customerName: "", customerPhone: "", cccd: "" });
     onClose();
   };
 
@@ -57,6 +57,7 @@ const CustomerModal = ({ isOpen, onClose, custommer, setCustomer }) => {
                   name="customerPhone"
                   className="form-input"
                   placeholder="Nhập số điện thoại"
+                  value={custommer.customerPhone}
                   onChange={(e) => handleInputChange(e)}
                 />
               </div>
@@ -87,6 +88,8 @@ const CustomerModal = ({ isOpen, onClose, custommer, setCustomer }) => {
                   name="cccd"
                   className="form-input"
                   placeholder="Số căn cước công dân, hộ chiếu"
+                  value={custommer.cccd}
+                  onChange={(e) => handleInputChange(e)}
                 />
               </div>
               <div className="form-group">
