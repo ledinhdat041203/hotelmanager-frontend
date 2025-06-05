@@ -318,7 +318,7 @@
 /* Container cho header table */
 .table .table-header {
   display: grid; /* Sử dụng grid để căn chỉnh các cột */
-  grid-template-columns: 1fr 2fr 2fr 2fr 3fr 3fr 3fr 3fr 2fr; /* Tỷ lệ cột: Loại phòng (2 phần), Giá (1 phần mỗi cột) */
+  grid-template-columns: 1fr 2fr 2fr 2fr 2fr 3fr 3fr 3fr 3fr 2fr; /* Tỷ lệ cột: Loại phòng (2 phần), Giá (1 phần mỗi cột) */
   min-height: 48px;
   align-items: center; /* Căn giữa theo chiều dọc */
   justify-content: start;
@@ -348,7 +348,7 @@
 /* Table row */
 .table .table-row {
   display: grid; /* Sử dụng grid để căn chỉnh các cột */
-  grid-template-columns: 1fr 2fr 2fr 2fr 3fr 3fr 3fr 3fr 2fr;
+  grid-template-columns: 1fr 2fr 2fr 2fr 3fr 3fr 3fr 3fr 3fr 2fr;
   align-items: center; /* Căn giữa theo chiều dọc */
   background-color: #ffffff; /* Màu nền trắng */
   padding: 12px 16px; /* Khoảng cách bên trong */

@@ -48,9 +48,24 @@ const deleteBookingItemAPI = async (bookingId) => {
   }
 };
 
+const findBookingItemByDateAPI = async (from, too) => {
+  try {
+    const res = await axiosInstance.get(
+      "/booking-service/get-booking-service-by-date",
+      {
+        params: { from, too },
+      }
+    );
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export {
   createBookingItemAPI,
   updateBookingItemAPI,
   findItemByBookingAPI,
   deleteBookingItemAPI,
+  findBookingItemByDateAPI,
 };

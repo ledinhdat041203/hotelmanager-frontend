@@ -5,6 +5,7 @@ import {
   createBookingAPI,
   findAllBookingAPI,
   findBookedTimeSlotsAPI,
+  findBookingByDateAPI,
   findBookingByIdAPI,
   payBookingAPI,
   searchBookingAPI,
@@ -241,6 +242,29 @@ const cancelBooking = async (bookingId) => {
   }
 };
 
+const findBookingByDate = async (dates) => {
+  try {
+    const [from, to] = dates;
+    const res = await findBookingByDateAPI(
+      from.format("YYYY-MM-DD"),
+      to.format("YYYY-MM-DD")
+    );
+    const resData = res.data;
+
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      return data;
+    } else {
+      // throw new Error(resData.message || "Không tìm thấy đơn đặt phòng");
+      return [];
+    }
+  } catch (error) {
+    // toast.error(
+    //   error.response?.data?.message || "Không tìm thấy đơn đặt phòng"
+    // );
+  }
+};
+
 export {
   createBooking,
   findAllBooking,
@@ -251,4 +275,5 @@ export {
   payBooking,
   checkinBooking,
   cancelBooking,
+  findBookingByDate,
 };

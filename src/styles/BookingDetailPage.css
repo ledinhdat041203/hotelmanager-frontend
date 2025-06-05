@@ -2,7 +2,7 @@
 .booking-detail-page {
   background-color: #f4f4f4; /* Màu nền nhạt */
   padding: 16px 0;
-  margin-top: 52px;
+  margin-top: 40px;
   width: 100%;
   height: 100%;
 }
@@ -55,25 +55,84 @@
   position: relative;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 4px 12px;
   align-items: center;
-  display: flex;
+  gap: 4px;
+  background-color: #f9fafb;
+  transition: all 0.2s ease;
 }
 
-.booking-detail-page .search-customer > span {
-  font-size: 16px;
-  padding-left: 8px;
+.booking-detail-page .search-customer:hover {
+  border-color: #10b981;
+  background-color: #ffffff;
+}
+
+.booking-detail-page .customer-info-details {
+  flex: 1;
+}
+
+.booking-detail-page .customer-contact {
+  display: flex;
+  flex-wrap: wrap;
+  /* gap: 4px; */
+  align-items: start;
+  flex-direction: column;
+}
+
+.booking-detail-page .customer-contact span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  padding: 4px 8px;
+  /* font-weight: 600; */
+}
+
+.booking-detail-page .customer-contact i {
+  font-size: 12px;
+}
+
+.booking-detail-page .customer-name {
   font-weight: 600;
-  color: #5ba6f8;
-  margin-right: 8px;
+}
+
+.booking-detail-page .customer-phone i {
+  color: #3b82f6;
+}
+
+.booking-detail-page .customer-cccd i {
+  color: #10b981;
 }
 
 .booking-detail-page .search-customer > button {
   border: none;
-  background-color: white;
-  color: #bbc5c2;
-  font-size: 18px;
-  margin-left: auto;
+  background: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.booking-detail-page .search-customer > button:hover {
+  background-color: #f3f4f6;
+}
+
+.booking-detail-page .search-customer > button i {
+  font-size: 16px;
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.booking-detail-page .search-customer > button:hover i {
+  color: #10b981;
+}
+
+.booking-detail-page .search-customer > button:last-child:hover i {
+  color: #ef4444;
 }
 
 .input-group {

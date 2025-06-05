@@ -36,7 +36,6 @@ export default function BookingDetail() {
   const [searchQuery, setSearchQuery] = useState("");
   const [servicesItems, setServiceItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [quantities, setQuantities] = useState({});
 
   const [searchRoom, setSearchRoom] = useState("");
   const [filteredRooms, setFilteredRooms] = useState([]);
@@ -83,8 +82,6 @@ export default function BookingDetail() {
   const [services, setServices] = useState([]);
   const [searchServiceName, setSearchServiceName] = useState(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-
-  const quantity = 1;
 
   const { id: bookingId } = useParams();
 
@@ -321,33 +318,57 @@ export default function BookingDetail() {
         <div className="customer-info">
           {/* Customer */}
           <div className="customer-section">
-            <h3 className="section-title">Khách hàng</h3>
             {booking.customerName === "" ? (
-              <div className="search-customer">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input
-                  type="text"
-                  placeholder="Nhập tên, SĐT, mã CCCD khách hàng"
-                  className="search-customer-input"
-                  value={booking.customerName}
-                  onChange={(e) =>
-                    setBooking((prev) => ({
-                      ...prev,
-                      customerName: e.target.value,
-                    }))
-                  }
-                />
-                <button onClick={() => setOpenCustomerModal(true)}>
-                  <i class="fa-solid fa-circle-plus"></i>
-                </button>
-              </div>
+              <>
+                <h3 className="section-title">Khách hàng</h3>
+                <div className="search-customer">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input
+                    type="text"
+                    placeholder="Nhập tên, SĐT, mã CCCD khách hàng"
+                    className="search-customer-input"
+                    value={booking.customerName}
+                    onChange={(e) =>
+                      setBooking((prev) => ({
+                        ...prev,
+                        customerName: e.target.value,
+                      }))
+                    }
+                  />
+                  <button onClick={() => setOpenCustomerModal(true)}>
+                    <i class="fa-solid fa-circle-plus"></i>
+                  </button>
+                </div>
+              </>
             ) : (
               <div className="search-customer">
-                <i class="fa-regular fa-user"></i>
-                <span>{booking.customerName}</span>
+                <div className="customer-info-details">
+                  <div className="customer-contact">
+                    <span className="customer-name">
+                      <i class="fa-regular fa-user"></i>
+                      {booking.customerName}
+                    </span>
+                    <span className="customer-phone">
+                      <i class="fa-solid fa-phone"></i>
+                      {booking.customerPhone ? booking.customerPhone : "---"}
+                    </span>
+                    <span className="customer-cccd">
+                      <i class="fa-solid fa-id-card"></i>
+                      {booking.cccd ? booking.cccd : "---"}
+                    </span>
+                  </div>
+                </div>
+                <button onClick={() => setOpenCustomerModal(true)}>
+                  <i className="fa-solid fa-pen-to-square"></i>
+                </button>
                 <button
                   onClick={() =>
-                    setBooking((prev) => ({ ...prev, customerName: "" }))
+                    setBooking((prev) => ({
+                      ...prev,
+                      customerName: "",
+                      customerPhone: "",
+                      cccd: "",
+                    }))
                   }
                 >
                   <i class="fa-solid fa-xmark"></i>

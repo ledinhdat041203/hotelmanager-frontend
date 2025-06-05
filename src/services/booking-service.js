@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import {
   createBookingItemAPI,
   deleteBookingItemAPI,
+  findBookingItemByDateAPI,
   findItemByBookingAPI,
   updateBookingItemAPI,
 } from "../api/booking-item";
@@ -76,9 +77,33 @@ const removeBookingItem = async (bookingItemId) => {
   }
 };
 
+const findBookingItemByDate = async (dates) => {
+  try {
+    const [from, to] = dates;
+    const res = await findBookingItemByDateAPI(
+      from.format("YYYY-MM-DD"),
+      to.format("YYYY-MM-DD")
+    );
+    const resData = res.data;
+
+    if (resData.statusCode === 200) {
+      const data = resData.data;
+      return data;
+    } else {
+      // throw new Error(resData.message || "Không tìm thấy đơn đặt phòng");
+      return [];
+    }
+  } catch (error) {
+    // toast.error(
+    //   error.response?.data?.message || "Không tìm thấy đơn đặt phòng"
+    // );
+  }
+};
+
 export {
   createBookingItem,
   updateBookingItem,
   getBookingItemsByBooking,
   removeBookingItem,
+  findBookingItemByDate,
 };
