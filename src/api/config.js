@@ -18,7 +18,6 @@ let refreshPromise = null;
 
 // Hàm gọi API refresh token
 const requestTokenAPI = async () => {
-
   return axiosInstance.post("/auth/refresh");
 };
 
@@ -31,19 +30,19 @@ const logoutUserAPI = async () => {
   }
 };
 
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     // const token = localStorage.getItem("token");
-//     const token = "mnn";
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    // const token = "mnn";
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Response interceptor cho axiosInstance
 // axiosInstance.interceptors.response.use(
